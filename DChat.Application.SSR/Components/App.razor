@@ -1,0 +1,33 @@
+﻿@using System.Reflection
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css?v=@Version" />
+    <link rel="stylesheet" href="DChat.Application.SSR.styles.css?v=@Version" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+</body>
+
+</html>
+
+@code {
+    private static long? version;
+
+    public static long Version => version ??= GetAssemblyModifiedTime();
+
+    private static long GetAssemblyModifiedTime()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var fi = new FileInfo(assembly.Location);
+        return fi.LastWriteTime.Ticks;
+    }
+}

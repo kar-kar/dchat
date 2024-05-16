@@ -1,0 +1,12 @@
+﻿@using DChat.Application.Shared.Components.Account.Shared
+
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Shared.Components.Layout.MainLayout)">
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>
