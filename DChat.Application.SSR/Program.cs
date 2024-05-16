@@ -39,7 +39,7 @@ namespace DChat.Application.SSR
                 .AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services
-                .AddIdentityCore<ChatUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddIdentityCore<ChatUser>(IdentityExtensions.ConfigureOptions)
                 .AddEntityFrameworkStores<ChatDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
