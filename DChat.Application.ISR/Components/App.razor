@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="app.css?v=@Version" />
     <link rel="stylesheet" href="DChat.Application.ISR.styles.css?v=@Version" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet @rendermode="RenderModeForPage" />
 </head>
 
 <body>
-    <Routes @rendermode="InteractiveServer" />
+    <Routes @rendermode="RenderModeForPage" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 
@@ -23,7 +23,13 @@
 @code {
     private static long? version;
 
-    public static long Version => version ??= GetAssemblyModifiedTime();
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private IComponentRenderMode? RenderModeForPage =>
+        HttpContext?.Request.Path.StartsWithSegments("/Account") == true ? null : InteractiveServer;
+
+    private static long Version => version ??= GetAssemblyModifiedTime();
 
     private static long GetAssemblyModifiedTime()
     {
