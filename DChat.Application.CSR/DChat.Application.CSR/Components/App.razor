@@ -8,7 +8,7 @@
     <base href="/" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css?v=@Version" />
-    <link rel="stylesheet" href="DChat.Application.ISR.styles.css?v=@Version" />
+    <link rel="stylesheet" href="DChat.Application.CSR.styles.css?v=@Version" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet @rendermode="RenderModeForPage" />
 </head>
@@ -22,10 +22,10 @@
 
 @code {
     [CascadingParameter]
-    private HttpContext? HttpContext { get; set; }
+    private HttpContext? HttpContext { get; set; } = default!;
 
     private IComponentRenderMode? RenderModeForPage =>
-        HttpContext?.Request.Path.StartsWithSegments("/Account") is true ? null : InteractiveServer;
+        HttpContext?.Request.Path.StartsWithSegments("/Account") is true ? null : InteractiveWebAssembly;
 
     private static long? version;
 
