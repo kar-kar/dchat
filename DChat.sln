@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Application.SSR", "DChat.Application.SSR\DChat.Application.SSR.csproj", "{70964EEF-9625-4BB9-9B6B-199F188F34E7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Data", "DChat.Data\DChat.Data.csproj", "{3AB7561E-D4DA-430C-81D6-82F8DE3AF71B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Application.Shared", "DChat.Application.Shared\DChat.Application.Shared.csproj", "{E3F5E8D4-CD99-4CED-81AF-CAD39D843AE1}"
@@ -19,16 +17,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DChat.Application.CSR", "DC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.Application.CSR.Server", "DChat.Application.CSR\DChat.Application.CSR.Server\DChat.Application.CSR.Server.csproj", "{C95A2A9B-365F-475B-A844-2DC5451D11B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.Application.SSR.Server", "DChat.Application.SSR.Server\DChat.Application.SSR.Server.csproj", "{AF4FA675-A0C7-46D2-B08F-898103011AC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{70964EEF-9625-4BB9-9B6B-199F188F34E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70964EEF-9625-4BB9-9B6B-199F188F34E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70964EEF-9625-4BB9-9B6B-199F188F34E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70964EEF-9625-4BB9-9B6B-199F188F34E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3AB7561E-D4DA-430C-81D6-82F8DE3AF71B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3AB7561E-D4DA-430C-81D6-82F8DE3AF71B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AB7561E-D4DA-430C-81D6-82F8DE3AF71B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,6 +49,10 @@ Global
 		{C95A2A9B-365F-475B-A844-2DC5451D11B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C95A2A9B-365F-475B-A844-2DC5451D11B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C95A2A9B-365F-475B-A844-2DC5451D11B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF4FA675-A0C7-46D2-B08F-898103011AC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF4FA675-A0C7-46D2-B08F-898103011AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF4FA675-A0C7-46D2-B08F-898103011AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF4FA675-A0C7-46D2-B08F-898103011AC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
