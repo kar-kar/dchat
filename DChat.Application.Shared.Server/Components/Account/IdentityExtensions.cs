@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace DChat.Application.Shared.Components.Account
+namespace DChat.Application.Shared.Server.Components.Account
 {
     public static class IdentityExtensions
     {

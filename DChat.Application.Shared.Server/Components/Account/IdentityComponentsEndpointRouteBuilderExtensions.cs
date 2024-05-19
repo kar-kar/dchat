@@ -1,5 +1,5 @@
-using DChat.Application.Shared.Components.Account.Pages;
-using DChat.Application.Shared.Components.Account.Pages.Manage;
+using DChat.Application.Shared.Server.Components.Account.Pages;
+using DChat.Application.Shared.Server.Components.Account.Pages.Manage;
 using DChat.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

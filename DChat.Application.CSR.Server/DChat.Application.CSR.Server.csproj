@@ -14,8 +14,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DChat.Data\DChat.Data.csproj" />
     <ProjectReference Include="..\DChat.Application.CSR.Client\DChat.Application.CSR.Client.csproj" />
-    <ProjectReference Include="..\..\DChat.Application.Shared.Server\DChat.Application.Shared.Server.csproj" />
+    <ProjectReference Include="..\DChat.Application.Shared.Server\DChat.Application.Shared.Server.csproj" />
+    <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
   </ItemGroup>
 </Project>

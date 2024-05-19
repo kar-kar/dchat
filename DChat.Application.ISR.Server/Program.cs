@@ -1,6 +1,6 @@
-using DChat.Application.ISR.Components;
-using DChat.Application.Shared.Components.Account;
-using DChat.Application.Shared.Components.Layout;
+using DChat.Application.ISR.Server.Components;
+using DChat.Application.Shared.Server.Components.Account;
+using DChat.Application.Shared.Server.Components.Layout;
 using DChat.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;

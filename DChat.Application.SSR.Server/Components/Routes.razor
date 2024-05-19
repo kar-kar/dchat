@@ -1,8 +1,8 @@
-﻿@using DChat.Application.Shared.Components.Account.Shared
+﻿@using DChat.Application.Shared.Server.Components.Account.Shared
 
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Shared.Components.Layout.MainLayout)">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Shared.Server.Components.Layout.MainLayout)">
             <NotAuthorized>
                 <RedirectToLogin />
             </NotAuthorized>

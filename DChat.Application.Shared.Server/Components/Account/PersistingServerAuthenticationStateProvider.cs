@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
-namespace DChat.Application.Shared.Components.Account
+namespace DChat.Application.Shared.Server.Components.Account
 {
     // This is a server-side AuthenticationStateProvider that uses PersistentComponentState to flow the
     // authentication state to the client which is then fixed for the lifetime of the WebAssembly application.

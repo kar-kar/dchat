@@ -2,7 +2,7 @@ using DChat.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace DChat.Application.Shared.Components.Account
+namespace DChat.Application.Shared.Server.Components.Account
 {
     // Remove the "else if (EmailSender is IdentityNoOpEmailSender)" block from RegisterConfirmation.razor after updating with a real implementation.
     public sealed class IdentityNoOpEmailSender : IEmailSender<ChatUser>

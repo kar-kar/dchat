@@ -2,7 +2,7 @@ using DChat.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace DChat.Application.Shared.Components.Account
+namespace DChat.Application.Shared.Server.Components.Account
 {
     public sealed class IdentityUserAccessor(UserManager<ChatUser> userManager, IdentityRedirectManager redirectManager)
     {
