@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Data", "DChat.Data\DC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Application.Shared", "DChat.Application.Shared\DChat.Application.Shared.csproj", "{E3F5E8D4-CD99-4CED-81AF-CAD39D843AE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Application.ISR", "DChat.Application.ISR\DChat.Application.ISR.csproj", "{22DE731A-D267-4044-A525-2C815365020C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Application.CSR.Client", "DChat.Application.CSR\DChat.Application.CSR.Client\DChat.Application.CSR.Client.csproj", "{D7DAC61D-9551-4AFE-8D0A-CC297F557F42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.Application.Shared.ClientServer", "DChat.Application.Shared.ClientServer\DChat.Application.Shared.ClientServer.csproj", "{33AD986B-E2F2-4D2F-A481-F1ACFD36B5F1}"
@@ -18,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.Application.CSR.Server", "DChat.Application.CSR\DChat.Application.CSR.Server\DChat.Application.CSR.Server.csproj", "{C95A2A9B-365F-475B-A844-2DC5451D11B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.Application.SSR.Server", "DChat.Application.SSR.Server\DChat.Application.SSR.Server.csproj", "{AF4FA675-A0C7-46D2-B08F-898103011AC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.Application.ISR.Server", "DChat.Application.ISR.Server\DChat.Application.ISR.Server.csproj", "{F9D68EBB-9BDE-4F1C-88FC-3C033D4BA69B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +33,6 @@ Global
 		{E3F5E8D4-CD99-4CED-81AF-CAD39D843AE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3F5E8D4-CD99-4CED-81AF-CAD39D843AE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3F5E8D4-CD99-4CED-81AF-CAD39D843AE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22DE731A-D267-4044-A525-2C815365020C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22DE731A-D267-4044-A525-2C815365020C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22DE731A-D267-4044-A525-2C815365020C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22DE731A-D267-4044-A525-2C815365020C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D7DAC61D-9551-4AFE-8D0A-CC297F557F42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D7DAC61D-9551-4AFE-8D0A-CC297F557F42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7DAC61D-9551-4AFE-8D0A-CC297F557F42}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,6 +49,10 @@ Global
 		{AF4FA675-A0C7-46D2-B08F-898103011AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF4FA675-A0C7-46D2-B08F-898103011AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF4FA675-A0C7-46D2-B08F-898103011AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9D68EBB-9BDE-4F1C-88FC-3C033D4BA69B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9D68EBB-9BDE-4F1C-88FC-3C033D4BA69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9D68EBB-9BDE-4F1C-88FC-3C033D4BA69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9D68EBB-9BDE-4F1C-88FC-3C033D4BA69B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
