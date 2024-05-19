@@ -16,7 +16,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DChat.Application.Shared\DChat.Application.Shared.csproj" />
     <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
+    <ProjectReference Include="..\DChat.Application.Shared.Server\DChat.Application.Shared.Server.csproj" />
   </ItemGroup>
 </Project>
