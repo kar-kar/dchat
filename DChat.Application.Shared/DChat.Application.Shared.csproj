@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DChat.Application.Shared.ClientServer\DChat.Application.Shared.ClientServer.csproj" />
     <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
   </ItemGroup>
 

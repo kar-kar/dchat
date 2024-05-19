@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\DChat.Application.Shared.ClientServer\DChat.Application.Shared.ClientServer.csproj" />
+  </ItemGroup>
+
 </Project>
