@@ -8,12 +8,10 @@
 
   <ItemGroup>
     <None Remove="Components\Layout\MainLayout.razor.css" />
-    <None Remove="Components\Layout\NavMenu.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Components\Layout\MainLayout.razor.css" />
-    <Content Include="Components\Layout\NavMenu.razor.css" />
   </ItemGroup>
 
 
@@ -24,10 +22,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
