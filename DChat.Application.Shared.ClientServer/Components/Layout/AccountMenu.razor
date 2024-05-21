@@ -1,0 +1,26 @@
+﻿@inject NavigationManager NavigationManager
+
+<div class="dropdown">
+    <button type="button" class="nav-item btn btn-sm btn-secondary ms-1" id="user-menu-btn" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-user"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="user-menu-btn">
+        <AuthorizeView>
+            <Authorized>
+                <li><h6 class="dropdown-header">@context.User.Identity?.Name</h6></li>
+                <li><NavLink class="dropdown-item" href="/Account/Manage">Profile</NavLink></li>
+                <li>
+                    <form class="form-inline" method="post" action="Account/Logout">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@NavigationManager.ToBaseRelativePath(NavigationManager.Uri)" />
+                        <button id="logout" type="submit" class="btn dropdown-item">Logout</button>
+                    </form>
+                </li>
+            </Authorized>
+            <NotAuthorized>
+                <li><NavLink class="dropdown-item" href="/Account/Login">Log in</NavLink></li>
+                <li><NavLink class="dropdown-item" href="/Account/Register">Register</NavLink></li>
+            </NotAuthorized>
+        </AuthorizeView>
+    </ul>
+</div>
