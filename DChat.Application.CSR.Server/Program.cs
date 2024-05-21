@@ -1,6 +1,7 @@
 using DChat.Application.CSR.Server.Components;
+using DChat.Application.Shared.ClientServer.Components.Layout;
 using DChat.Application.Shared.Server.Components.Account;
-using DChat.Application.Shared.Server.Components.Layout;
+using DChat.Application.Shared.Server.Components.Account.Layout;
 using DChat.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -68,6 +69,7 @@ namespace DChat.Application.CSR
             app.MapRazorComponents<App>()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly)
+                .AddAdditionalAssemblies(typeof(AccountLayout).Assembly)
                 .AddAdditionalAssemblies(typeof(MainLayout).Assembly);
 
             // Add additional endpoints required by the Identity /Account Razor components.

@@ -1,4 +1,4 @@
-namespace DChat.Application.CSR.Client
+namespace DChat.Application.Shared.ClientServer
 {
     // Add properties to this class and update the server and client AuthenticationStateProviders
     // to expose more information about the authenticated user to the client.

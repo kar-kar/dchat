@@ -1,6 +1,7 @@
 using DChat.Application.ISR.Server.Components;
+using DChat.Application.Shared.ClientServer.Components.Layout;
 using DChat.Application.Shared.Server.Components.Account;
-using DChat.Application.Shared.Server.Components.Layout;
+using DChat.Application.Shared.Server.Components.Account.Layout;
 using DChat.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
@@ -66,7 +67,8 @@ namespace DChat.Application.ISR
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
-                .AddAdditionalAssemblies(typeof(MainLayout).Assembly);
+                .AddAdditionalAssemblies(typeof(MainLayout).Assembly)
+                .AddAdditionalAssemblies(typeof(AccountLayout).Assembly);
 
             app.Run();
         }

@@ -1,5 +1,6 @@
+using DChat.Application.Shared.ClientServer.Components.Layout;
 using DChat.Application.Shared.Server.Components.Account;
-using DChat.Application.Shared.Server.Components.Layout;
+using DChat.Application.Shared.Server.Components.Account.Layout;
 using DChat.Application.SSR.Server.Components;
 using DChat.Data;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -65,7 +66,8 @@ namespace DChat.Application.SSR
             app.UseAntiforgery();
 
             app.MapRazorComponents<App>()
-                .AddAdditionalAssemblies(typeof(MainLayout).Assembly);
+                .AddAdditionalAssemblies(typeof(MainLayout).Assembly)
+                .AddAdditionalAssemblies(typeof(AccountLayout).Assembly);
 
             // Add additional endpoints required by the Identity /Account Razor components.
             app.MapAdditionalIdentityEndpoints();
