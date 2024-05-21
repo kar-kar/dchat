@@ -18,5 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
     <ProjectReference Include="..\DChat.Application.Shared.Server\DChat.Application.Shared.Server.csproj" />
+    <ProjectReference Include="..\DChat.Services\DChat.Services.csproj" />
   </ItemGroup>
 </Project>
