@@ -62,9 +62,9 @@ namespace DChat.Application.Shared.Server.Services
                 yield return message;
         }
 
-        public IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, int id, int count)
+        public IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, int id)
         {
-            return chatService.GetMessagesAfterId(room, id, count);
+            return chatService.GetMessagesAfterId(room, id);
         }
     }
 }

@@ -1,16 +1,9 @@
-﻿.page {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+﻿.connection-indicator {
+    color: red;
 }
-
-main {
-    flex-grow: 1;
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-}
+    .connection-indicator.connected {
+        color: lightgreen;
+    }
 
 .message-list-container {
     overflow-y: scroll;

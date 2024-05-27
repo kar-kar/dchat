@@ -1,5 +1,9 @@
 ﻿class ChatController {
     constructor() {
+        this.connectionIndicator = document.querySelector(".connection-indicator");
+        if (!this.connectionIndicator)
+            throw new Error("Connection indicator not found");
+
         this.messageTemplate = document.getElementById('message-template').innerHTML;
         if (!this.messageTemplate)
             throw new Error("Message template not found");
@@ -25,21 +29,42 @@
             throw new Error("Message sentinel not found");
 
         this.connection = new signalR.HubConnectionBuilder()
-            .configureLogging(signalR.LogLevel.Trace)
+            .configureLogging(signalR.LogLevel.Information)
             .withUrl("/chathub", { transport: signalR.HttpTransportType.WebSockets })
-            .withAutomaticReconnect()
+            .withAutomaticReconnect({ nextRetryDelayInMilliseconds: _ => 5000 })
             .build();
 
         this.connection.on("ReceiveMessage", msg => this.receive(msg));
 
+        this.connection.onreconnecting(err => {
+            const status = `Connection lost due to error "${err}". Reconnecting...`;
+            console.log(status);
+            this.setConnectionStatus(false, status);
+        });
+
+        this.connection.onreconnected(() => {
+            console.log("reconnected");
+            this.setConnectionStatus(true);
+            this.reconnectToRoom();
+        });
+
+        this.connection.onclose(err => {
+            const status = `Connection permanently lost due to error "${err}". Try reloading page.`;
+            console.error(status);
+            this.setConnectionStatus(false, status);
+        });
+
         this.connection
             .start()
             .then(() => {
-                console.log("Connection started");
+                console.log("connected");
+                this.setConnectionStatus(true);
                 this.joinRoom("world");
             })
             .catch(err => {
-                return console.error(err.toString());
+                const status = `Error connecting to server "${err}". Try reloading page.`;
+                console.error(status);
+                this.setConnectionStatus(false, status);
             });
 
         this.observer = new IntersectionObserver(entries => {
@@ -66,6 +91,11 @@
         });
     }
 
+    setConnectionStatus(isConnected, status) {
+        this.connectionIndicator.classList.toggle("connected", isConnected);
+        this.connectionIndicator.setAttribute("title", status || "Connected");
+    }
+
     joinRoom(room) {
         if (this.currentRoom == room)
             return;
@@ -82,8 +112,16 @@
         this.loadHistory();
     }
 
+    reconnectToRoom() {
+        if (!this.currentRoom)
+            return;
+
+        this.connection.invoke("Subscribe", this.currentRoom);
+        this.loadMissingMessages();
+    }
+
     loadHistory() {
-        if (this.isHistoryLoaded || this.connection.state != signalR.HubConnectionState.Connected)
+        if (!this.currentRoom || this.isHistoryLoaded || this.connection.state != signalR.HubConnectionState.Connected)
             return;
 
         console.log("loading history");
@@ -101,6 +139,24 @@
                         console.log("entire history is loaded");
                         this.isHistoryLoaded = true;
                     }
+                },
+                error: (err) => {
+                    console.error(err.toString());
+                },
+            });
+    }
+
+    loadMissingMessages() {
+        if (!this.currentRoom || !this.maxMsgId || this.connection.state != signalR.HubConnectionState.Connected)
+            return;
+
+        console.log("loading missing messages after reconnecting");
+
+        this.connection
+            .stream("GetMessagesAfterId", this.currentRoom, this.maxMsgId)
+            .subscribe({
+                next: item => {
+                    this.receive(item);
                 },
                 error: (err) => {
                     console.error(err.toString());

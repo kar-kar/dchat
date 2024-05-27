@@ -40,13 +40,12 @@ namespace DChat.Application.Shared.Server.Services
             return query.AsAsyncEnumerable();
         }
 
-        public IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, long id, int count)
+        public IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, long id)
         {
             var query = db.Messages
                 .Where(m => m.Room == room && m.Id > id)
                 .OrderBy(m => m.Id)
-                .Select(MessageView.FromMessageExpr)
-                .Take(count);
+                .Select(MessageView.FromMessageExpr);
 
             return query.AsAsyncEnumerable();
         }
