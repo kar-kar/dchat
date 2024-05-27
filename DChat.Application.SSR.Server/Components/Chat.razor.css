@@ -1,7 +1,29 @@
-﻿.connection-indicator {
+﻿
+#room-btn {
+    color: white;
+}
+
+#room-btn:hover {
+    color: white;
+    border-color: white;
+}
+
+#room-btn:focus {
+    box-shadow: none;
+}
+
+.dropdown-menu-center {
+    right: auto;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    -o-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+}
+
+#connection-indicator {
     color: red;
 }
-    .connection-indicator.connected {
+    #connection-indicator.connected {
         color: lightgreen;
     }
 

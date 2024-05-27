@@ -22,14 +22,24 @@
 
     <script>
         $(function () {
-            new bootstrap.Tooltip(document.querySelector(".connection-indicator"));
+            new bootstrap.Tooltip(document.getElementById("connection-indicator"));
             new ChatController();
         });
     </script>
 </HeadContent>
 
 <SectionContent SectionName="nav-bar-section">
-    <div data-bs-toggle="tooltip" data-bs-placement="bottom" title="" class="connection-indicator ms-auto me-2">
+    <div class="flex-grow-1 dropdown dropdown-center mx-2">
+        <button id="room-btn" title="Room" class="btn w-100" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        <form id="change-room-form" class="dropdown-menu dropdown-menu-center p-4">
+            <div class="mb-3">
+                <label for="room-name-input" class="form-label">Change room</label>
+                <input type="text" class="form-control" id="room-name-input" placeholder="room name">
+            </div>
+            <button type="submit" id="change-room-btn" class="btn btn-primary">Change</button>
+        </form>
+    </div>
+    <div id="connection-indicator" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" class="me-2">
         <i class="fas fa-signal"></i>
     </div>
 </SectionContent>
