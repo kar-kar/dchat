@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Extensibility;
 
 namespace DChat.Application.SSR
 {
@@ -43,11 +45,12 @@ namespace DChat.Application.SSR
 
             builder.Services
                 .AddIdentityCore<ChatUser>(IdentityExtensions.ConfigureOptions)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ChatDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
-
-            builder.Services.AddSingleton<IEmailSender<ChatUser>, IdentityNoOpEmailSender>();
+            
+            builder.Services.AddScoped<IUserClaimsPrincipalFactory<ChatUser>, ChatUserClaimsPrincipalFactory>();
 
             builder.Services.AddSignalR(options =>
             {

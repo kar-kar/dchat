@@ -80,6 +80,6 @@
         if (authState.User.Identity?.IsAuthenticated != true)
             throw new UnauthorizedAccessException();
 
-        UserId = authState.User.Identity?.Name;
+        UserId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
 }

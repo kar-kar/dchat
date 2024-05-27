@@ -45,8 +45,6 @@ namespace DChat.Application.ISR
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
 
-            builder.Services.AddSingleton<IEmailSender<ChatUser>, IdentityNoOpEmailSender>();
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

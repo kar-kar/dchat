@@ -10,9 +10,7 @@
 @inject UserManager<ChatUser> UserManager
 @inject IUserStore<ChatUser> UserStore
 @inject SignInManager<ChatUser> SignInManager
-@inject IEmailSender<ChatUser> EmailSender
 @inject ILogger<Register> Logger
-@inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
 <PageTitle>Register</PageTitle>
@@ -84,15 +82,6 @@
 
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
-    }
-
-    private IUserEmailStore<ChatUser> GetEmailStore()
-    {
-        if (!UserManager.SupportsUserEmail)
-        {
-            throw new NotSupportedException("The default UI requires a user store with email support.");
-        }
-        return (IUserEmailStore<ChatUser>)UserStore;
     }
 
     private sealed class InputModel

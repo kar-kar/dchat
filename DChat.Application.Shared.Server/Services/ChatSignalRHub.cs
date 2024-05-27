@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 
 namespace DChat.Application.Shared.Server.Services
 {
@@ -10,7 +11,8 @@ namespace DChat.Application.Shared.Server.Services
         private readonly ChatService chatService;
         private readonly NotificationsService notificationsService;
 
-        public ChatSignalRHub(ChatService chatService, NotificationsService notificationsService)
+        public ChatSignalRHub(ChatService chatService,
+            NotificationsService notificationsService)
         {
             this.chatService = chatService;
             this.notificationsService = notificationsService;
@@ -38,7 +40,7 @@ namespace DChat.Application.Shared.Server.Services
 
         public async Task SendMessage(InputMessage input)
         {
-            var sender = Context.User?.Identity?.Name;
+            var sender = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(sender))
                 throw new UnauthorizedAccessException("User is not authenticated.");
