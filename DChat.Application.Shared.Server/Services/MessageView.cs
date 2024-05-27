@@ -1,7 +1,7 @@
 ﻿using DChat.Data;
 using System.Linq.Expressions;
 
-namespace DChat.Services
+namespace DChat.Application.Shared.Server.Services
 {
     public class MessageView
     {

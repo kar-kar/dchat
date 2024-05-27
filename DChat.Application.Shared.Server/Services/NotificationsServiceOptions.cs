@@ -1,4 +1,4 @@
-﻿namespace DChat.Services
+﻿namespace DChat.Application.Shared.Server.Services
 {
     public class NotificationsServiceOptions
     {

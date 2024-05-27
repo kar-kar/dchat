@@ -18,6 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
     <ProjectReference Include="..\DChat.Application.Shared.Server\DChat.Application.Shared.Server.csproj" />
-    <ProjectReference Include="..\DChat.Services\DChat.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Components/Chat.razor.css" CssScope="ssr-chat-scope" />
   </ItemGroup>
 </Project>

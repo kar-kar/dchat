@@ -1,11 +1,10 @@
 ﻿using MessagePack;
 using MessagePack.Resolvers;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace DChat.Services
+namespace DChat.Application.Shared.Server.Services
 {
     public sealed class NotificationsService : IDisposable
     {

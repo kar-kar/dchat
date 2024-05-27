@@ -1,10 +1,12 @@
 using DChat.Application.Shared.ClientServer.Components.Layout;
 using DChat.Application.Shared.Server.Components.Account;
 using DChat.Application.Shared.Server.Components.Account.Layout;
+using DChat.Application.Shared.Server.Services;
 using DChat.Application.SSR.Server.Components;
 using DChat.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,6 +49,16 @@ namespace DChat.Application.SSR
 
             builder.Services.AddSingleton<IEmailSender<ChatUser>, IdentityNoOpEmailSender>();
 
+            builder.Services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
+
+            builder.Services.Configure<NotificationsServiceOptions>(options => options.RabbitMqConnectionString = rabbitMqConnectionString);
+            builder.Services.AddSingleton<NotificationsService>();
+            builder.Services.AddScoped<ChatService>();
+            builder.Services.AddHostedService<NotificationsProcessingService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -71,6 +83,9 @@ namespace DChat.Application.SSR
 
             // Add additional endpoints required by the Identity /Account Razor components.
             app.MapAdditionalIdentityEndpoints();
+
+            app.MapHub<ChatSignalRHub>("/chathub")
+                .WithHttpLogging(HttpLoggingFields.All);
 
             app.Run();
         }

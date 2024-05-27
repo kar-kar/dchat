@@ -1,7 +1,7 @@
 ﻿using DChat.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace DChat.Services
+namespace DChat.Application.Shared.Server.Services
 {
     public class ChatService
     {

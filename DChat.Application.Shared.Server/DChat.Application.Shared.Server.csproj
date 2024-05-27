@@ -10,8 +10,10 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.5.140" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.5" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.5" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DChat.Application.Shared.ClientServer\DChat.Application.Shared.ClientServer.csproj" />

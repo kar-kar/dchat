@@ -2,7 +2,7 @@
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 
-namespace DChat.Services
+namespace DChat.Application.Shared.Server.Services
 {
     public static partial class MessageEncoder
     {

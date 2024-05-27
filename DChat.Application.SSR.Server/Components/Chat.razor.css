@@ -1,0 +1,101 @@
+﻿.page {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-list-container {
+    overflow-y: scroll;
+    background-color: rgb(241, 238, 234);
+}
+
+.message-list {
+    padding: 1em 1em 0 1em;
+}
+
+.message {
+    background-color: rgb(179, 220, 240);
+    margin-bottom: 1em;
+    margin-right: 2em;
+    padding: 0.3em 0.5em 0.5em 0.5em;
+    border-radius: 5px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: Arial, sans-serif;
+    font-size: small;
+}
+
+.message-sender {
+    font-weight: bold;
+    color: rgb(5, 97, 235);
+}
+
+.message-time {
+    color: rgb(102, 102, 101);
+    font-size: x-small;
+}
+
+.message-body {
+    margin-top: 0.2em;
+    font-family: Verdana, Tahoma, sans-serif;
+    font-size: small;
+}
+
+    .message-body img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+.message-mine {
+    background-color: rgb(188, 250, 188);
+    margin-left: 2em;
+    margin-right: 0;
+}
+
+    .message-mine .message-sender {
+        color: rgb(0, 169, 0);
+    }
+
+.new-message-container {
+    background-color: rgb(33, 37, 41);
+}
+
+.new-message-area {
+    flex-grow: 1;
+    overflow: hidden;
+    resize: none;
+}
+
+.send-message-btn {
+    width: 2rem;
+    background: linear-gradient(to right, rgb(61, 35, 211), rgb(52, 133, 231));
+    padding: 0;
+    border: none;
+    outline: none;
+}
+
+    .send-message-btn i {
+        color: white;
+        padding: 0.2em;
+    }
+
+    .send-message-btn:hover {
+        background: linear-gradient(to right, rgb(107, 83, 242), rgb(125, 161, 233));
+    }
+
+        .send-message-btn:hover i {
+            color: rgb(18, 2, 142);
+        }
