@@ -62,9 +62,12 @@ namespace DChat.Application.Shared.Server.Services
                 yield return message;
         }
 
-        public IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, int id)
+        public async IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, int id, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            return chatService.GetMessagesAfterId(room, id);
+            var messages = chatService.GetMessagesAfterId(room, id).WithCancellation(cancellationToken);
+
+            await foreach (var message in messages)
+                yield return message;
         }
     }
 }

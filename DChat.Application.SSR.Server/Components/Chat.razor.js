@@ -1,5 +1,6 @@
 ﻿class ChatController {
-    constructor() {
+    constructor(currentUserId) {
+        this.currentUserId = currentUserId;
         this.findElements();
         this.connection = this.connect();
         this.observer = this.createScrollObserver();
@@ -239,6 +240,10 @@
         newElement.setAttribute("ssr-chat-scope", "");
         newElement.id = "msg-" + msg.id;
         newElement.className = "message";
+
+        if (msg.senderId == this.currentUserId)
+            newElement.classList.add("own");
+
         newElement.innerHTML = Sqrl.render(this.messageTemplate, msg);
         let added = false;
 

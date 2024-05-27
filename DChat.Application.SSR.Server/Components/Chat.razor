@@ -1,4 +1,6 @@
-﻿<HeadContent>
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<HeadContent>
     <style type="text/css">
         .page {
             height: 100vh;
@@ -23,7 +25,7 @@
     <script>
         $(function () {
             new bootstrap.Tooltip(document.getElementById("connection-indicator"));
-            new ChatController();
+            new ChatController("@UserId");
         });
     </script>
 </HeadContent>
@@ -59,7 +61,7 @@
 
 <script id="message-template" type="text/template">
     <div class="message-header" ssr-chat-scope>
-        <span class="message-sender" ssr-chat-scope>{{it.sender}}</span>
+        <span class="message-sender" ssr-chat-scope>{{it.senderDisplayName}}</span>
         <span class="message-time" ssr-chat-scope>15:30:22</span>
     </div>
     <div class="message-body" ssr-chat-scope>
@@ -67,6 +69,17 @@
     </div>
 </script>
 
-@code {
+@code
+{
+    private string? UserId { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User.Identity?.IsAuthenticated != true)
+            throw new UnauthorizedAccessException();
+
+        UserId = authState.User.Identity?.Name;
+    }
 }

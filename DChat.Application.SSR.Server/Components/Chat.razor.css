@@ -3,14 +3,14 @@
     color: white;
 }
 
-#room-btn:hover {
-    color: white;
-    border-color: white;
-}
+    #room-btn:hover {
+        color: white;
+        border-color: white;
+    }
 
-#room-btn:focus {
-    box-shadow: none;
-}
+    #room-btn:focus {
+        box-shadow: none;
+    }
 
 .dropdown-menu-center {
     right: auto;
@@ -23,6 +23,7 @@
 #connection-indicator {
     color: red;
 }
+
     #connection-indicator.connected {
         color: lightgreen;
     }
@@ -74,13 +75,13 @@
         margin-right: auto;
     }
 
-.message-mine {
+.message.own {
     background-color: rgb(188, 250, 188);
     margin-left: 2em;
     margin-right: 0;
 }
 
-    .message-mine .message-sender {
+    .message.own .message-sender {
         color: rgb(0, 169, 0);
     }
 

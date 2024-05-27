@@ -12,11 +12,13 @@ namespace DChat.Application.Shared.Server.Services
             this.db = db;
         }
 
-        public async Task<MessageView> AddMessage(string sender, string room, string text)
+        public async Task<MessageView> AddMessage(string senderId, string room, string text)
         {
+            var user = await db.Users.FindAsync(senderId);
+
             var message = new Message
             {
-                Sender = sender,
+                Sender = senderId,
                 Room = room,
                 Text = text,
                 Html = MessageEncoder.ToHtml(text),
@@ -26,26 +28,53 @@ namespace DChat.Application.Shared.Server.Services
             db.Messages.Add(message);
             await db.SaveChangesAsync();
 
-            return MessageView.Create(message);
+            return new MessageView
+            {
+                Room = message.Room,
+                Id = message.Id,
+                SenderId = message.Sender,
+                SenderDisplayName = user?.DisplayName ?? senderId,
+                Html = message.Html,
+                Timestamp = message.Timestamp.Ticks
+            };
         }
 
         public IAsyncEnumerable<MessageView> GetMessagesBeforeId(string room, long? id, int count)
         {
-            var query = db.Messages
-                .Where(m => m.Room == room && (id == null || m.Id < id.Value))
-                .OrderByDescending(m => m.Id)
-                .Select(MessageView.FromMessageExpr)
-                .Take(count);
+            var query = from msg in db.Messages.AsNoTracking()
+                        join user in db.Users on msg.Sender equals user.Id into users
+                        from user in users.DefaultIfEmpty()
+                        where msg.Room == room && (!id.HasValue || msg.Id < id)
+                        orderby msg.Id descending
+                        select new MessageView
+                        {
+                            Room = msg.Room,
+                            Id = msg.Id,
+                            SenderId = msg.Sender,
+                            SenderDisplayName = user.DisplayName ?? msg.Sender,
+                            Html = msg.Html,
+                            Timestamp = msg.Timestamp.Ticks
+                        };
 
-            return query.AsAsyncEnumerable();
+            return query.Take(count).AsAsyncEnumerable();
         }
 
         public IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, long id)
         {
-            var query = db.Messages
-                .Where(m => m.Room == room && m.Id > id)
-                .OrderBy(m => m.Id)
-                .Select(MessageView.FromMessageExpr);
+            var query = from msg in db.Messages.AsNoTracking()
+                        join user in db.Users on msg.Sender equals user.Id into users
+                        from user in users.DefaultIfEmpty()
+                        where msg.Room == room && msg.Id > id
+                        orderby msg.Id
+                        select new MessageView
+                        {
+                            Room = msg.Room,
+                            Id = msg.Id,
+                            SenderId = msg.Sender,
+                            SenderDisplayName = user.DisplayName ?? msg.Sender,
+                            Html = msg.Html,
+                            Timestamp = msg.Timestamp.Ticks
+                        };
 
             return query.AsAsyncEnumerable();
         }
