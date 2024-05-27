@@ -20,6 +20,12 @@ namespace DChat.Data
             builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens", identitySchema);
             builder.Entity<IdentityRole>().ToTable("Roles", identitySchema);
             builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims", identitySchema);
+
+            builder.Entity<Message>()
+                .HasOne<ChatUser>()
+                .WithMany()
+                .HasForeignKey(m => m.Sender)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
