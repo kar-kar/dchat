@@ -6,16 +6,12 @@ using System.Security.Claims;
 
 namespace DChat.Application.Shared.Server.Components.Account
 {
-    public class ChatUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ChatUser, IdentityRole>
+    public class ChatUserClaimsPrincipalFactory(
+        UserManager<ChatUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IOptions<IdentityOptions> options)
+        : UserClaimsPrincipalFactory<ChatUser, IdentityRole>(userManager, roleManager, options)
     {
-        public ChatUserClaimsPrincipalFactory(
-            UserManager<ChatUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IOptions<IdentityOptions> options)
-            : base(userManager, roleManager, options)
-        {
-        }
-
         public override async Task<ClaimsPrincipal> CreateAsync(ChatUser user)
         {
             var principal = await base.CreateAsync(user);

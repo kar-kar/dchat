@@ -17,6 +17,6 @@ namespace DChat.Data
 
         public required string Html { get; set; }
 
-        public DateTime Timestamp { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
     }
 }

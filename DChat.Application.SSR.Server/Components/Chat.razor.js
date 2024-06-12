@@ -246,6 +246,8 @@
         if (msg.senderId == this.currentUserId)
             newElement.classList.add("own");
 
+        msg.localTime = this.ticksToLocalTime(msg.timestamp);
+
         newElement.innerHTML = Sqrl.render(this.messageTemplate, msg);
         let added = false;
 
@@ -270,5 +272,12 @@
         if (!added) {
             this.messageList.appendChild(newElement);
         }
+    }
+
+    ticksToLocalTime(ticks) {
+        if (!ticks)
+            return "";
+
+        return new Date(ticks).toLocaleString();
     }
 }

@@ -8,22 +8,12 @@ using System.Security.Claims;
 namespace DChat.Application.Shared.Server.Services
 {
     [Authorize]
-    public class ChatSignalRHub: Hub<IChatSignalRClient>
+    public class ChatSignalRHub(
+        ChatService chatService,
+        NotificationsService notificationsService,
+        UserManager<ChatUser> userManager)
+        : Hub<IChatSignalRClient>
     {
-        private readonly ChatService chatService;
-        private readonly NotificationsService notificationsService;
-        private readonly UserManager<ChatUser> userManager;
-
-        public ChatSignalRHub(
-            ChatService chatService,
-            NotificationsService notificationsService,
-            UserManager<ChatUser> userManager)
-        {
-            this.chatService = chatService;
-            this.notificationsService = notificationsService;
-            this.userManager = userManager;
-        }
-
         public override Task OnConnectedAsync()
         {
             return base.OnConnectedAsync();
@@ -80,17 +70,17 @@ namespace DChat.Application.Shared.Server.Services
 
         public async IAsyncEnumerable<MessageView> GetMessagesBeforeId(string room, int? id, int count, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var messages =  chatService.GetMessagesBeforeId(room, id, count).WithCancellation(cancellationToken);
+            var messages =  chatService.GetMessagesBeforeId(room, id, count);
 
-            await foreach (var message in messages)
+            await foreach (var message in messages.WithCancellation(cancellationToken))
                 yield return message;
         }
 
         public async IAsyncEnumerable<MessageView> GetMessagesAfterId(string room, int id, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var messages = chatService.GetMessagesAfterId(room, id).WithCancellation(cancellationToken);
+            var messages = chatService.GetMessagesAfterId(room, id);
 
-            await foreach (var message in messages)
+            await foreach (var message in messages.WithCancellation(cancellationToken))
                 yield return message;
         }
     }

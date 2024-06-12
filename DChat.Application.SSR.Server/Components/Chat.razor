@@ -68,7 +68,7 @@
 <script id="message-template" type="text/template">
     <div class="message-header" ssr-chat-scope>
         <span class="message-sender" ssr-chat-scope>{{it.senderDisplayName}}</span>
-        <span class="message-time" ssr-chat-scope>15:30:22</span>
+        <span class="message-time" ssr-chat-scope>{{it.localTime}}</span>
     </div>
     <div class="message-body" ssr-chat-scope>
         {{it.html | safe}}
