@@ -1,4 +1,10 @@
-﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@using System.Text.RegularExpressions
+@using DChat.Application.Shared.ClientServer
+@using DChat.Data
+@using Microsoft.AspNetCore.Identity
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserManager<ChatUser> UserManager
 
 <HeadContent>
     <style type="text/css">
@@ -25,7 +31,7 @@
     <script>
         $(function () {
             new bootstrap.Tooltip(document.getElementById("connection-indicator"));
-            new ChatController("@UserId");
+            new ChatController("@UserId", "@DefaultRoom");
         });
     </script>
 </HeadContent>
@@ -72,6 +78,7 @@
 @code
 {
     private string? UserId { get; set; }
+    private string? DefaultRoom { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,6 +87,11 @@
         if (authState.User.Identity?.IsAuthenticated != true)
             throw new UnauthorizedAccessException();
 
-        UserId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = await UserManager.GetUserAsync(authState.User);
+        if (user is null)
+            throw new UnauthorizedAccessException();
+
+        UserId = user.Id;
+        DefaultRoom = user.DefaultRoom ?? "world";
     }
 }

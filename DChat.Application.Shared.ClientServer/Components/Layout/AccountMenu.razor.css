@@ -1,0 +1,12 @@
+﻿#user-menu-btn {
+    color: white;
+}
+
+    #user-menu-btn:hover {
+        color: white;
+        border-color: white;
+    }
+
+    #user-menu-btn:focus {
+        box-shadow: none;
+    }

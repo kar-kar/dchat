@@ -1,6 +1,7 @@
 ﻿class ChatController {
-    constructor(currentUserId) {
+    constructor(currentUserId, defaultRoom) {
         this.currentUserId = currentUserId;
+        this.defaultRoom = defaultRoom;
         this.findElements();
         this.connection = this.connect();
         this.observer = this.createScrollObserver();
@@ -105,7 +106,7 @@
             .then(() => {
                 console.log("connected");
                 this.setConnectionStatus(true);
-                this.joinRoom("world");
+                this.joinRoom(this.defaultRoom);
             })
             .catch(err => {
                 const status = `Error connecting to server "${err}". Try reloading page.`;
@@ -148,6 +149,7 @@
         this.isHistoryLoaded = false;
 
         if (this.currentRoom) {
+            this.connection.invoke("SetDefaultRoom", this.currentRoom);
             this.connection.invoke("Subscribe", this.currentRoom);
             this.loadHistory();
         }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DChat.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
@@ -10,12 +12,16 @@ namespace DChat.Application.Shared.Server.Services
     {
         private readonly ChatService chatService;
         private readonly NotificationsService notificationsService;
+        private readonly UserManager<ChatUser> userManager;
 
-        public ChatSignalRHub(ChatService chatService,
-            NotificationsService notificationsService)
+        public ChatSignalRHub(
+            ChatService chatService,
+            NotificationsService notificationsService,
+            UserManager<ChatUser> userManager)
         {
             this.chatService = chatService;
             this.notificationsService = notificationsService;
+            this.userManager = userManager;
         }
 
         public override Task OnConnectedAsync()
@@ -36,6 +42,22 @@ namespace DChat.Application.Shared.Server.Services
         public Task Unsubscribe(string room)
         {
             return Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
+        }
+
+        public async Task SetDefaultRoom(string room)
+        {
+            if (Context.User is null)
+                throw new UnauthorizedAccessException("User is not authenticated.");
+
+            var user = await userManager.GetUserAsync(Context.User) ?? throw new UnauthorizedAccessException("User is not authenticated.");
+            if (user.DefaultRoom == room)
+                return;
+
+            user.DefaultRoom = room;
+
+            var updateResult = await userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                throw new InvalidOperationException("Failed to update user's default room.");
         }
 
         public async Task SendMessage(InputMessage input)

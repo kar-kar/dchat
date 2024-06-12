@@ -1,0 +1,9 @@
+timestamp adjusted to local time zone
+link to room
+user roles in rooms
+allow to clear room history
+display room list
+display user list
+messages with pictures
+deploy to azure
+switch between chat apps

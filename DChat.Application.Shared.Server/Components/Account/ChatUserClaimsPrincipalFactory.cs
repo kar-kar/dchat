@@ -21,14 +21,8 @@ namespace DChat.Application.Shared.Server.Components.Account
             var principal = await base.CreateAsync(user);
             var identity = principal.Identity as ClaimsIdentity;
 
-            if (identity is not null)
-            {
-                if (!string.IsNullOrWhiteSpace(user.DisplayName))
-                    identity.AddClaim(new Claim(ChatUserClaimTypes.DisplayName, user.DisplayName));
-
-                if (!string.IsNullOrWhiteSpace(user.DefaultRoom))
-                    identity.AddClaim(new Claim(ChatUserClaimTypes.DefaultRoom, user.DefaultRoom));
-            }
+            if (identity is not null && !string.IsNullOrWhiteSpace(user.DisplayName))
+                identity.AddClaim(new Claim(ChatUserClaimTypes.DisplayName, user.DisplayName));
 
             return principal;
         }
