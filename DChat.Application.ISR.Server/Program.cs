@@ -2,6 +2,7 @@ using DChat.Application.ISR.Server.Components;
 using DChat.Application.Shared.ClientServer.Components.Layout;
 using DChat.Application.Shared.Server.Components.Account;
 using DChat.Application.Shared.Server.Components.Account.Layout;
+using DChat.Application.Shared.Server.Services;
 using DChat.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
@@ -44,6 +45,10 @@ namespace DChat.Application.ISR
                 .AddEntityFrameworkStores<ChatDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
+
+            builder.Services.Configure<NotificationsServiceOptions>(options => options.RabbitMqConnectionString = rabbitMqConnectionString);
+            builder.Services.AddSingleton<NotificationsService>();
+            builder.Services.AddScoped<ChatService>();
 
             var app = builder.Build();
 

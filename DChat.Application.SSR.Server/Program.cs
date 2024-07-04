@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.Extensibility;
 
 namespace DChat.Application.SSR
 {

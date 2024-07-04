@@ -7,22 +7,7 @@
 @inject UserManager<ChatUser> UserManager
 
 <HeadContent>
-    <style type="text/css">
-        .page {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        main {
-            flex-grow: 1;
-            height: 100%;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
-
+    <link rel="stylesheet" href="_content/DChat.Application.Shared.ClientServer/chat.css" />
     <script src="signalr/dist/browser/signalr.min.js"></script>
     <script src="squirrelly/dist/browser/squirrelly.min.js"></script>
     <script src="jquery/dist/jquery.slim.min.js"></script>
@@ -66,11 +51,11 @@
 </div>
 
 <script id="message-template" type="text/template">
-    <div class="message-header" ssr-chat-scope>
-        <span class="message-sender" ssr-chat-scope>{{it.senderDisplayName}}</span>
-        <span class="message-time" ssr-chat-scope>{{it.localTime}}</span>
+    <div class="message-header">
+        <span class="message-sender">{{it.senderDisplayName}}</span>
+        <span class="message-time">{{it.localTime}}</span>
     </div>
-    <div class="message-body" ssr-chat-scope>
+    <div class="message-body">
         {{it.html | safe}}
     </div>
 </script>

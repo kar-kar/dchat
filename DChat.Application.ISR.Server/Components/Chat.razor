@@ -1,0 +1,206 @@
+﻿@using DChat.Application.Shared.Server.Services
+@using DChat.Data
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserManager<ChatUser> UserManager
+@inject ChatService ChatService
+@inject NotificationsService NotificationsService
+@inject IJSRuntime JSRuntime
+
+@implements IDisposable
+
+<HeadContent>
+    <link rel="stylesheet" href="_content/DChat.Application.Shared.ClientServer/chat.css" />
+</HeadContent>
+
+<SectionContent SectionName="nav-bar-section">
+    <div class="flex-grow-1 dropdown dropdown-center mx-2">
+        <button id="room-btn" title="Room" class="btn w-100" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        <form id="change-room-form" class="dropdown-menu dropdown-menu-center p-4">
+            <div class="mb-3">
+                <label for="room-name-input" class="form-label">Change room</label>
+                <input type="text" class="form-control" id="room-name-input" placeholder="room name">
+            </div>
+            <button type="submit" id="change-room-btn" class="btn btn-primary">Change</button>
+        </form>
+    </div>
+    <div id="connection-indicator" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" class="me-2">
+        <i class="fas fa-signal"></i>
+    </div>
+</SectionContent>
+
+<div class="message-list-container flex-grow-1 d-flex flex-column-reverse">
+    <div class="message-list container d-flex flex-column-reverse">
+        <Virtualize @ref="VirtualizedMessageList" ItemsProvider="VirtualizedMessagesProvider" Context="msg">
+            <div class="message">
+                <div class="message-header">
+                    <span class="message-sender">@msg.SenderDisplayName</span>
+                    <span class="message-time">15:30:22</span>
+                </div>
+                <div class="message-body">
+                    @((MarkupString)msg.Html)
+                </div>
+            </div>
+        </Virtualize>
+    </div>
+</div>
+<div class="new-message-container">
+    <div class="container d-flex p-2">
+        <textarea rows="1" class="new-message-area flex-grow-1" @bind="NewMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
+        <button class="send-message-btn" @onclick="SendMessage">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+@code {
+    private string? currentRoom;
+    private bool isHistoryLoading;
+    private bool isHistoryLoaded;
+
+    private Virtualize<MessageView>? VirtualizedMessageList { get; set; }
+    private string? NewMessageText { get; set; }
+    private string? UserId { get; set; }
+    private LinkedList<MessageView> Messages { get; set; } = new();
+    private long? MinMessageId => Messages.Last?.Value.Id;
+    private long? MaxMessageId => Messages.First?.Value.Id;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await GetCurrentUser();
+        UserId = user.Id;
+
+        NotificationsService.MessageReceived += OnMessageReceived;
+
+        await JoinRoom(user.DefaultRoom ?? "world");
+    }
+
+    private async Task<ChatUser> GetCurrentUser()
+    {
+        ClaimsPrincipal? principal = null;
+        if (AuthStateTask is not null)
+            principal = (await AuthStateTask).User;
+
+        if (principal?.Identity?.IsAuthenticated != true)
+            throw new UnauthorizedAccessException();
+
+        var user = await UserManager.GetUserAsync(principal);
+        if (user is null)
+            throw new UnauthorizedAccessException();
+
+        return user;
+    }
+
+    private async Task JoinRoom(string room)
+    {
+        if (room == currentRoom)
+            return;
+
+        Messages.Clear();
+
+        currentRoom = room;
+        isHistoryLoaded = false;
+
+        await LoadHistory();
+    }
+
+    private async Task LoadHistory()
+    {
+        if (currentRoom is null || isHistoryLoading || isHistoryLoaded)
+            return;
+
+        try
+        {
+            isHistoryLoading = true;
+            var requested = 20;
+            var loaded = 0;
+
+            await foreach (var msg in ChatService.GetMessagesBeforeId(currentRoom, MinMessageId, requested))
+            {
+                ReceiveMessage(msg);
+                loaded++;
+            }
+
+            isHistoryLoaded = loaded < requested;
+        }
+        finally
+        {
+            isHistoryLoading = false;
+        }
+    }
+
+    private void ReceiveMessage(MessageView msg)
+    {
+        if (Messages.Count == 0 || msg.Id < MinMessageId)
+            Messages.AddLast(msg);
+        else if (msg.Id > MaxMessageId)
+            Messages.AddFirst(msg);
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(NewMessageText) || currentRoom is null)
+            return;
+
+        if (string.IsNullOrEmpty(UserId))
+            throw new UnauthorizedAccessException();
+
+        var text = NewMessageText;
+        NewMessageText = string.Empty;
+
+        var msg = await ChatService.AddMessage(UserId, currentRoom, text);
+        NotificationsService.SendMessage(msg);
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+            await SendMessage();
+    }
+
+    private void OnMessageReceived(object? sender, MessageView msg)
+    {
+        if (msg.Room != currentRoom)
+            return;
+
+        InvokeAsync(async () =>
+        {
+            //add message to the list
+            ReceiveMessage(msg);
+
+            if (VirtualizedMessageList is null)
+                return;
+
+            //force virtualization container to reload data
+            await VirtualizedMessageList.RefreshDataAsync();
+
+            //force render
+            StateHasChanged();
+        });
+    }
+
+    private ValueTask<ItemsProviderResult<MessageView>> VirtualizedMessagesProvider(ItemsProviderRequest request)
+    {
+        var result = new ItemsProviderResult<MessageView>(
+            Messages.Skip(request.StartIndex).Take(request.Count).ToArray(),
+            Messages.Count);
+
+        return new ValueTask<ItemsProviderResult<MessageView>>(result);
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void Dispose()
+    {
+        NotificationsService.MessageReceived -= OnMessageReceived;
+    }
+}
