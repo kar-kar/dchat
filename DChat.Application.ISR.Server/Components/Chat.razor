@@ -33,8 +33,9 @@
 </SectionContent>
 
 <div class="message-list-container flex-grow-1 d-flex flex-column-reverse">
-    <div class="message-list container d-flex flex-column-reverse">
-        <Virtualize @ref="VirtualizedMessageList" ItemsProvider="VirtualizedMessagesProvider" Context="msg">
+    <div class="message-list container">
+        @foreach (var msg in Messages)
+        {
             <div class="message">
                 <div class="message-header">
                     <span class="message-sender">@msg.SenderDisplayName</span>
@@ -44,8 +45,9 @@
                     @((MarkupString)msg.Html)
                 </div>
             </div>
-        </Virtualize>
+        }
     </div>
+    <div class="message-sentinel" style="height:1px;flex-shrink:0;"></div>
 </div>
 <div class="new-message-container">
     <div class="container d-flex p-2">
@@ -60,25 +62,21 @@
     private string? currentRoom;
     private bool isHistoryLoading;
     private bool isHistoryLoaded;
+    private ChatUser? currentUser;
 
-    private Virtualize<MessageView>? VirtualizedMessageList { get; set; }
     private string? NewMessageText { get; set; }
-    private string? UserId { get; set; }
     private LinkedList<MessageView> Messages { get; set; } = new();
-    private long? MinMessageId => Messages.Last?.Value.Id;
-    private long? MaxMessageId => Messages.First?.Value.Id;
+    private long? MinMessageId => Messages.First?.Value.Id;
+    private long? MaxMessageId => Messages.Last?.Value.Id;
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var user = await GetCurrentUser();
-        UserId = user.Id;
-
+        currentUser = await GetCurrentUser();
         NotificationsService.MessageReceived += OnMessageReceived;
-
-        await JoinRoom(user.DefaultRoom ?? "world");
+        await JoinRoom(currentUser?.DefaultRoom ?? "world");
     }
 
     private async Task<ChatUser> GetCurrentUser()
@@ -110,15 +108,15 @@
         await LoadHistory();
     }
 
-    private async Task LoadHistory()
+    private async Task<bool> LoadHistory()
     {
         if (currentRoom is null || isHistoryLoading || isHistoryLoaded)
-            return;
+            return false;
 
         try
         {
             isHistoryLoading = true;
-            var requested = 20;
+            var requested = 5;
             var loaded = 0;
 
             await foreach (var msg in ChatService.GetMessagesBeforeId(currentRoom, MinMessageId, requested))
@@ -128,6 +126,7 @@
             }
 
             isHistoryLoaded = loaded < requested;
+            return true;
         }
         finally
         {
@@ -138,9 +137,9 @@
     private void ReceiveMessage(MessageView msg)
     {
         if (Messages.Count == 0 || msg.Id < MinMessageId)
-            Messages.AddLast(msg);
-        else if (msg.Id > MaxMessageId)
             Messages.AddFirst(msg);
+        else if (msg.Id > MaxMessageId)
+            Messages.AddLast(msg);
     }
 
     private async Task SendMessage()
@@ -148,13 +147,13 @@
         if (string.IsNullOrWhiteSpace(NewMessageText) || currentRoom is null)
             return;
 
-        if (string.IsNullOrEmpty(UserId))
+        if (currentUser is null)
             throw new UnauthorizedAccessException();
 
         var text = NewMessageText;
         NewMessageText = string.Empty;
 
-        var msg = await ChatService.AddMessage(UserId, currentRoom, text);
+        var msg = await ChatService.AddMessage(currentUser.Id, currentRoom, text);
         NotificationsService.SendMessage(msg);
     }
 
@@ -169,34 +168,11 @@
         if (msg.Room != currentRoom)
             return;
 
-        InvokeAsync(async () =>
+        InvokeAsync(() =>
         {
-            //add message to the list
             ReceiveMessage(msg);
-
-            if (VirtualizedMessageList is null)
-                return;
-
-            //force virtualization container to reload data
-            await VirtualizedMessageList.RefreshDataAsync();
-
-            //force render
             StateHasChanged();
         });
-    }
-
-    private ValueTask<ItemsProviderResult<MessageView>> VirtualizedMessagesProvider(ItemsProviderRequest request)
-    {
-        var result = new ItemsProviderResult<MessageView>(
-            Messages.Skip(request.StartIndex).Take(request.Count).ToArray(),
-            Messages.Count);
-
-        return new ValueTask<ItemsProviderResult<MessageView>>(result);
-    }
-
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        return base.OnAfterRenderAsync(firstRender);
     }
 
     public void Dispose()

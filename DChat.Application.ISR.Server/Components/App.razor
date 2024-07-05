@@ -27,7 +27,7 @@
     private HttpContext? HttpContext { get; set; }
 
     private IComponentRenderMode? RenderModeForPage =>
-        HttpContext?.Request.Path.StartsWithSegments("/Account") is true ? null : InteractiveServer;
+        HttpContext?.Request.Path.StartsWithSegments("/Account") is true ? null : new InteractiveServerRenderMode(prerender: false);
 
     private static long? version;
 
