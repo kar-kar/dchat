@@ -14,6 +14,12 @@
 
 <HeadContent>
     <link rel="stylesheet" href="_content/DChat.Application.Shared.ClientServer/chat.css" />
+    <script src="Components/Chat.razor.js"></script>
+    <script>
+        function init(dotNetObj) {
+            new ChatController(dotNetObj);
+        }
+    </script>
 </HeadContent>
 
 <SectionContent SectionName="nav-bar-section">
@@ -33,7 +39,7 @@
 </SectionContent>
 
 <div class="message-list-container flex-grow-1 d-flex flex-column-reverse">
-    <div class="message-list container">
+    <div class="message-list container d-flex flex-column-reverse">
         @foreach (var msg in Messages)
         {
             <div class="message">
@@ -59,24 +65,51 @@
 </div>
 
 @code {
+    private DotNetObjectReference<Chat>? self;
     private string? currentRoom;
     private bool isHistoryLoading;
     private bool isHistoryLoaded;
     private ChatUser? currentUser;
+    private bool isComponentInitialized;
+    private bool isJsInitialized;
 
     private string? NewMessageText { get; set; }
     private LinkedList<MessageView> Messages { get; set; } = new();
-    private long? MinMessageId => Messages.First?.Value.Id;
-    private long? MaxMessageId => Messages.Last?.Value.Id;
+    private long? MinMessageId => Messages.Last?.Value.Id;
+    private long? MaxMessageId => Messages.First?.Value.Id;
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        self = DotNetObjectReference.Create(this);
         currentUser = await GetCurrentUser();
         NotificationsService.MessageReceived += OnMessageReceived;
-        await JoinRoom(currentUser?.DefaultRoom ?? "world");
+
+        //use additional flag to prevent JSInterop calls before the component is fully initialized
+        //this is needed because OnAfterRenderAsync is called before OnInitializedAsync finished
+        isComponentInitialized = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (isComponentInitialized && !isJsInitialized)
+        {
+            isJsInitialized = true;
+            await JSRuntime.InvokeVoidAsync("init", self);
+            await JoinRoom(currentUser?.DefaultRoom ?? "world");
+
+            //force re-render to display messages
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnMessageSentinelVisible()
+    {
+        if (await LoadHistory())
+            StateHasChanged();
     }
 
     private async Task<ChatUser> GetCurrentUser()
@@ -116,7 +149,7 @@
         try
         {
             isHistoryLoading = true;
-            var requested = 5;
+            var requested = 20;
             var loaded = 0;
 
             await foreach (var msg in ChatService.GetMessagesBeforeId(currentRoom, MinMessageId, requested))
@@ -137,9 +170,9 @@
     private void ReceiveMessage(MessageView msg)
     {
         if (Messages.Count == 0 || msg.Id < MinMessageId)
-            Messages.AddFirst(msg);
-        else if (msg.Id > MaxMessageId)
             Messages.AddLast(msg);
+        else if (msg.Id > MaxMessageId)
+            Messages.AddFirst(msg);
     }
 
     private async Task SendMessage()
