@@ -19,19 +19,23 @@
         function init(dotNetObj) {
             new ChatController(dotNetObj);
         }
+
+        function getTimezoneOffset() {
+            return new Date().getTimezoneOffset();
+        };
     </script>
 </HeadContent>
 
 <SectionContent SectionName="nav-bar-section">
     <div class="flex-grow-1 dropdown dropdown-center mx-2">
-        <button id="room-btn" title="Room" class="btn w-100" data-bs-toggle="dropdown" aria-expanded="false"></button>
-        <form id="change-room-form" class="dropdown-menu dropdown-menu-center p-4">
+        <button id="room-btn" title="Room" class="btn w-100" data-bs-toggle="dropdown" aria-expanded="false">@currentRoom</button>
+        <EditForm Model="this" OnSubmit="ChangeRoom" class="dropdown-menu dropdown-menu-center p-4">
             <div class="mb-3">
                 <label for="room-name-input" class="form-label">Change room</label>
-                <input type="text" class="form-control" id="room-name-input" placeholder="room name">
+                <InputText type="text" class="form-control" id="room-name-input" placeholder="room name" @bind-Value="newRoom" />
             </div>
             <button type="submit" id="change-room-btn" class="btn btn-primary">Change</button>
-        </form>
+        </EditForm>
     </div>
     <div id="connection-indicator" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" class="me-2">
         <i class="fas fa-signal"></i>
@@ -42,10 +46,10 @@
     <div class="message-list container d-flex flex-column-reverse">
         @foreach (var msg in Messages)
         {
-            <div class="message">
+            <div class="message @(IsCurrentUser(msg.SenderId) ? "own" : "")">
                 <div class="message-header">
                     <span class="message-sender">@msg.SenderDisplayName</span>
-                    <span class="message-time">15:30:22</span>
+                    <span class="message-time">@(DateTimeOffset.FromUnixTimeMilliseconds(msg.Timestamp).AddMinutes(-timezoneOffset).ToString("g"))</span>
                 </div>
                 <div class="message-body">
                     @((MarkupString)msg.Html)
@@ -67,11 +71,13 @@
 @code {
     private DotNetObjectReference<Chat>? self;
     private string? currentRoom;
+    private string? newRoom;
     private bool isHistoryLoading;
     private bool isHistoryLoaded;
     private ChatUser? currentUser;
     private bool isComponentInitialized;
     private bool isJsInitialized;
+    private int timezoneOffset;
 
     private string? NewMessageText { get; set; }
     private LinkedList<MessageView> Messages { get; set; } = new();
@@ -97,6 +103,7 @@
         if (isComponentInitialized && !isJsInitialized)
         {
             isJsInitialized = true;
+            timezoneOffset = await JSRuntime.InvokeAsync<int>("getTimezoneOffset");
             await JSRuntime.InvokeVoidAsync("init", self);
             await JoinRoom(currentUser?.DefaultRoom ?? "world");
 
@@ -130,6 +137,9 @@
 
     private async Task JoinRoom(string room)
     {
+        if (currentUser is null)
+            throw new UnauthorizedAccessException();
+
         if (room == currentRoom)
             return;
 
@@ -137,6 +147,12 @@
 
         currentRoom = room;
         isHistoryLoaded = false;
+
+        if (currentUser.DefaultRoom != room)
+        {
+            currentUser.DefaultRoom = room;
+            await UserManager.UpdateAsync(currentUser);
+        }
 
         await LoadHistory();
     }
@@ -206,6 +222,20 @@
             ReceiveMessage(msg);
             StateHasChanged();
         });
+    }
+
+    private bool IsCurrentUser(string userId)
+    {
+        return currentUser?.Id == userId;
+    }
+
+    private async Task ChangeRoom()
+    {
+        if (!string.IsNullOrWhiteSpace(newRoom))
+        {
+            await JoinRoom(newRoom);
+            StateHasChanged();
+        }
     }
 
     public void Dispose()
