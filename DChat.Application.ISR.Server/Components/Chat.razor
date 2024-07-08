@@ -37,14 +37,11 @@
             <button type="submit" id="change-room-btn" class="btn btn-primary">Change</button>
         </EditForm>
     </div>
-    <div id="connection-indicator" data-bs-toggle="tooltip" data-bs-placement="bottom" title="" class="me-2">
-        <i class="fas fa-signal"></i>
-    </div>
 </SectionContent>
 
 <div class="message-list-container flex-grow-1 d-flex flex-column-reverse">
     <div class="message-list container d-flex flex-column-reverse">
-        @foreach (var msg in Messages)
+        @foreach (var msg in messages)
         {
             <div class="message @(IsCurrentUser(msg.SenderId) ? "own" : "")">
                 <div class="message-header">
@@ -61,7 +58,7 @@
 </div>
 <div class="new-message-container">
     <div class="container d-flex p-2">
-        <textarea rows="1" class="new-message-area flex-grow-1" @bind="NewMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
+        <textarea rows="1" class="new-message-area flex-grow-1" @bind="newMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
         <button class="send-message-btn" @onclick="SendMessage">
             <i class="fas fa-paper-plane"></i>
         </button>
@@ -69,6 +66,7 @@
 </div>
 
 @code {
+    private readonly LinkedList<MessageView> messages = new();
     private DotNetObjectReference<Chat>? self;
     private string? currentRoom;
     private string? newRoom;
@@ -78,11 +76,10 @@
     private bool isComponentInitialized;
     private bool isJsInitialized;
     private int timezoneOffset;
+    private string? newMessageText;
 
-    private string? NewMessageText { get; set; }
-    private LinkedList<MessageView> Messages { get; set; } = new();
-    private long? MinMessageId => Messages.Last?.Value.Id;
-    private long? MaxMessageId => Messages.First?.Value.Id;
+    private long? MinMessageId => messages.Last?.Value.Id;
+    private long? MaxMessageId => messages.First?.Value.Id;
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
@@ -94,7 +91,7 @@
         NotificationsService.MessageReceived += OnMessageReceived;
 
         //use additional flag to prevent JSInterop calls before the component is fully initialized
-        //this is needed because OnAfterRenderAsync is called before OnInitializedAsync finished
+        //this is needed because OnAfterRenderAsync can be invoked before OnInitializedAsync finished
         isComponentInitialized = true;
     }
 
@@ -143,7 +140,7 @@
         if (room == currentRoom)
             return;
 
-        Messages.Clear();
+        messages.Clear();
 
         currentRoom = room;
         isHistoryLoaded = false;
@@ -185,22 +182,22 @@
 
     private void ReceiveMessage(MessageView msg)
     {
-        if (Messages.Count == 0 || msg.Id < MinMessageId)
-            Messages.AddLast(msg);
+        if (messages.Count == 0 || msg.Id < MinMessageId)
+            messages.AddLast(msg);
         else if (msg.Id > MaxMessageId)
-            Messages.AddFirst(msg);
+            messages.AddFirst(msg);
     }
 
     private async Task SendMessage()
     {
-        if (string.IsNullOrWhiteSpace(NewMessageText) || currentRoom is null)
+        if (string.IsNullOrWhiteSpace(newMessageText) || currentRoom is null)
             return;
 
         if (currentUser is null)
             throw new UnauthorizedAccessException();
 
-        var text = NewMessageText;
-        NewMessageText = string.Empty;
+        var text = newMessageText;
+        newMessageText = string.Empty;
 
         var msg = await ChatService.AddMessage(currentUser.Id, currentRoom, text);
         NotificationsService.SendMessage(msg);
@@ -231,7 +228,7 @@
 
     private async Task ChangeRoom()
     {
-        if (!string.IsNullOrWhiteSpace(newRoom))
+        if (!string.IsNullOrWhiteSpace(newRoom) && newRoom != currentRoom)
         {
             await JoinRoom(newRoom);
             StateHasChanged();

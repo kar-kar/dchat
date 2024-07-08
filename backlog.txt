@@ -1,4 +1,3 @@
-timestamp adjusted to local time zone
 link to room
 user roles in rooms
 allow to clear room history
