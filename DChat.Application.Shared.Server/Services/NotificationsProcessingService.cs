@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using DChat.Application.Shared.ClientServer;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Channels;
 
 namespace DChat.Application.Shared.Server.Services
 {
-    public class NotificationsProcessingService : BackgroundService
+    public class NotificationsProcessingService(NotificationsService notificationsService, IHubContext<ChatSignalRHub, IChatSignalRClient> hubContext) : BackgroundService
     {
-        private readonly NotificationsService notificationsService;
-        private readonly IHubContext<ChatSignalRHub, IChatSignalRClient> hubContext;
+        private readonly NotificationsService notificationsService = notificationsService;
+        private readonly IHubContext<ChatSignalRHub, IChatSignalRClient> hubContext = hubContext;
 
         private readonly Channel<MessageView> messages = Channel.CreateBounded<MessageView>(
             new BoundedChannelOptions(1000)
@@ -15,12 +16,6 @@ namespace DChat.Application.Shared.Server.Services
                 SingleWriter = true,
                 FullMode = BoundedChannelFullMode.Wait
             });
-
-        public NotificationsProcessingService(NotificationsService notificationsService, IHubContext<ChatSignalRHub, IChatSignalRClient> hubContext)
-        {
-            this.notificationsService = notificationsService;
-            this.hubContext = hubContext;
-        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

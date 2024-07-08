@@ -1,4 +1,5 @@
-﻿using DChat.Data;
+﻿using DChat.Application.Shared.ClientServer;
+using DChat.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;

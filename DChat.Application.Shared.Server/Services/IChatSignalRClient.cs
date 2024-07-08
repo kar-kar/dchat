@@ -1,4 +1,6 @@
-﻿namespace DChat.Application.Shared.Server.Services
+﻿using DChat.Application.Shared.ClientServer;
+
+namespace DChat.Application.Shared.Server.Services
 {
     public interface IChatSignalRClient
     {

@@ -1,4 +1,5 @@
-﻿using MessagePack;
+﻿using DChat.Application.Shared.ClientServer;
+using MessagePack;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;

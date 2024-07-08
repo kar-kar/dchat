@@ -1,10 +1,9 @@
-﻿@using DChat.Application.Shared.Server.Services
+﻿@using DChat.Application.Shared.ClientServer
+@using DChat.Application.Shared.Server.Services
 @using DChat.Data
 @using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
 
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
 @inject UserManager<ChatUser> UserManager
 @inject ChatService ChatService
 @inject NotificationsService NotificationsService

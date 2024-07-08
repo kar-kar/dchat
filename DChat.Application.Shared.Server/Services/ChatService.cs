@@ -1,4 +1,5 @@
-﻿using DChat.Data;
+﻿using DChat.Application.Shared.ClientServer;
+using DChat.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace DChat.Application.Shared.Server.Services

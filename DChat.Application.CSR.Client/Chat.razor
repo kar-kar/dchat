@@ -1,0 +1,90 @@
+﻿@using DChat.Application.Shared.ClientServer
+@inject IJSRuntime JSRuntime
+
+<HeadContent>
+    <link rel="stylesheet" href="_content/DChat.Application.Shared.ClientServer/chat.css" />
+    <script src="Chat.razor.js"></script>
+    <script>
+        function init(dotNetObj) {
+            new ChatController(dotNetObj);
+        }
+
+        function getTimezoneOffset() {
+            return new Date().getTimezoneOffset();
+        };
+    </script>
+</HeadContent>
+
+<SectionContent SectionName="nav-bar-section">
+    <div class="flex-grow-1 dropdown dropdown-center mx-2">
+        <button id="room-btn" title="Room" class="btn w-100" data-bs-toggle="dropdown" aria-expanded="false">@currentRoom</button>
+        <EditForm Model="this" OnSubmit="ChangeRoom" class="dropdown-menu dropdown-menu-center p-4">
+            <div class="mb-3">
+                <label for="room-name-input" class="form-label">Change room</label>
+                <InputText type="text" class="form-control" id="room-name-input" placeholder="room name" @bind-Value="newRoom" />
+            </div>
+            <button type="submit" id="change-room-btn" class="btn btn-primary">Change</button>
+        </EditForm>
+    </div>
+</SectionContent>
+
+<div class="message-list-container flex-grow-1 d-flex flex-column-reverse">
+    <div class="message-list container d-flex flex-column-reverse">
+        @foreach (var msg in messages)
+        {
+            <div class="message @(IsCurrentUser(msg.SenderId) ? "own" : "")">
+                <div class="message-header">
+                    <span class="message-sender">@msg.SenderDisplayName</span>
+                    <span class="message-time">@(DateTimeOffset.FromUnixTimeMilliseconds(msg.Timestamp).AddMinutes(-timezoneOffset).ToString("g"))</span>
+                </div>
+                <div class="message-body">
+                    @((MarkupString)msg.Html)
+                </div>
+            </div>
+        }
+    </div>
+    <div class="message-sentinel" style="height:1px;flex-shrink:0;"></div>
+</div>
+<div class="new-message-container">
+    <div class="container d-flex p-2">
+        <textarea rows="1" class="new-message-area flex-grow-1" @bind="newMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
+        <button class="send-message-btn" @onclick="SendMessage">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+@code
+{
+    private readonly LinkedList<MessageView> messages = new();
+    private string? currentRoom;
+    private string? newRoom;
+    private string? newMessageText;
+    private int timezoneOffset;
+
+    private long? MinMessageId => messages.Last?.Value.Id;
+    private long? MaxMessageId => messages.First?.Value.Id;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private Task SendMessage()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task ChangeRoom()
+    {
+        return Task.CompletedTask;
+    }
+
+    private bool IsCurrentUser(string userId)
+    {
+        return false;
+    }
+}
