@@ -135,7 +135,7 @@
     }
 
     joinRoom(room) {
-        if (this.currentRoom == room)
+        if (this.currentRoom == room || this.connection.state != signalR.HubConnectionState.Connected)
             return;
 
         if (this.currentRoom)

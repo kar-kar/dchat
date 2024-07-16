@@ -37,6 +37,10 @@ main {
     color: red;
 }
 
+    #connection-indicator.connecting {
+        color: yellow;
+    }
+
     #connection-indicator.connected {
         color: lightgreen;
     }

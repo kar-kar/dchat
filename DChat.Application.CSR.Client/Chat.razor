@@ -1,5 +1,7 @@
 ﻿@using DChat.Application.Shared.ClientServer
+@using Microsoft.AspNetCore.SignalR.Client
 @inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
 
 <HeadContent>
     <link rel="stylesheet" href="_content/DChat.Application.Shared.ClientServer/chat.css" />
@@ -26,6 +28,9 @@
             <button type="submit" id="change-room-btn" class="btn btn-primary">Change</button>
         </EditForm>
     </div>
+    <div id="connection-indicator" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@connectionTitle" class="me-2 @connectionStatus.ToString().ToLower()">
+        <i class="fas fa-signal"></i>
+    </div>
 </SectionContent>
 
 <div class="message-list-container flex-grow-1 d-flex flex-column-reverse">
@@ -47,7 +52,7 @@
 </div>
 <div class="new-message-container">
     <div class="container d-flex p-2">
-        <textarea rows="1" class="new-message-area flex-grow-1" @bind="newMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
+        <textarea rows="@newMessageAreaRows" class="new-message-area flex-grow-1" @bind="newMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
         <button class="send-message-btn" @onclick="SendMessage">
             <i class="fas fa-paper-plane"></i>
         </button>
@@ -61,6 +66,12 @@
     private string? newRoom;
     private string? newMessageText;
     private int timezoneOffset;
+    private HubConnection? connection;
+    private bool isHistoryLoading;
+    private bool isHistoryLoaded;
+    private ConnectionStatus connectionStatus;
+    private string? connectionTitle;
+    private int newMessageAreaRows = 1;
 
     private long? MinMessageId => messages.Last?.Value.Id;
     private long? MaxMessageId => messages.First?.Value.Id;
@@ -68,14 +79,169 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
 
-    private Task SendMessage()
+    protected override async Task OnInitializedAsync()
     {
-        return Task.CompletedTask;
+        connection = await Connect();
+        await JoinRoom("world");
     }
 
-    private Task HandleKeyPress(KeyboardEventArgs e)
+    private async Task<HubConnection> Connect()
     {
-        return Task.CompletedTask;
+        connectionStatus = ConnectionStatus.Connecting;
+
+        var connection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("chathub"))
+            .WithAutomaticReconnect(new InfiniteReconnectPolicy())
+            .Build();
+
+        connection.On<MessageView>("ReceiveMessage", ReceiveMessage);
+
+        connection.Reconnecting += error =>
+        {
+            connectionStatus = ConnectionStatus.Connecting;
+            connectionTitle = $"Connection lost due to error '${error?.Message}'. Reconnecting...";
+            StateHasChanged();
+            return Task.CompletedTask;
+        };
+
+        connection.Reconnected += async connectionId =>
+        {
+            connectionStatus = ConnectionStatus.Connected;
+            connectionTitle = "Connected";
+            await ReconnectToRoom();
+            StateHasChanged();
+        };
+
+        connection.Closed += error =>
+        {
+            connectionStatus = ConnectionStatus.Disconnected;
+            connectionTitle = $"Connection permanently lost due to error '${error?.Message}'. Try reloading page.";
+            StateHasChanged();
+            return Task.CompletedTask;
+        };
+
+        try
+        {
+            await connection.StartAsync();
+            connectionStatus = ConnectionStatus.Connected;
+            connectionTitle = "Connected";
+        }
+        catch (Exception ex)
+        {
+            connectionStatus = ConnectionStatus.Disconnected;
+            connectionTitle = $"Error connecting to server '${ex?.Message}'. Try reloading page.";
+            throw;
+        }
+
+        return connection;
+    }
+
+    private async Task JoinRoom(string room)
+    {
+        Check.NotNull(connection);
+
+        if (room == currentRoom || connection.State != HubConnectionState.Connected)
+            return;
+
+        if (!string.IsNullOrEmpty(currentRoom))
+            await connection.InvokeAsync("Unsubscribe", currentRoom);
+
+        messages.Clear();
+        currentRoom = room;
+        isHistoryLoaded = false;
+
+        if (!string.IsNullOrEmpty(currentRoom))
+        {
+            await connection.InvokeAsync("SetDefaultRoom", currentRoom);
+            await connection.InvokeAsync("Subscribe", currentRoom);
+            await LoadHistory();
+        }
+    }
+
+    private async Task ReconnectToRoom()
+    {
+        Check.NotNull(connection);
+
+        if (string.IsNullOrEmpty(currentRoom) || connection.State != HubConnectionState.Connected)
+            return;
+
+        await connection.InvokeAsync("Subscribe", currentRoom);
+
+        if (MaxMessageId is not null)
+            await LoadMissingMessages();
+        else
+            await LoadHistory();
+    }
+
+    private async Task LoadHistory()
+    {
+        Check.NotNull(connection);
+
+        if (string.IsNullOrEmpty(currentRoom) || isHistoryLoading || isHistoryLoaded || connection.State != HubConnectionState.Connected)
+            return;
+
+        try
+        {
+            isHistoryLoading = true;
+            var requested = 20;
+            var loaded = 0;
+
+            await foreach (var msg in connection.StreamAsync<MessageView>("GetMessagesBeforeId", currentRoom, MinMessageId, requested))
+            {
+                ReceiveMessage(msg);
+                loaded++;
+            }
+
+            if (loaded < requested)
+                isHistoryLoaded = true;
+        }
+        finally
+        {
+            isHistoryLoading = false;
+        }
+    }
+
+    private async Task LoadMissingMessages()
+    {
+        Check.NotNull(connection);
+
+        if (string.IsNullOrEmpty(currentRoom) || MaxMessageId is null || connection.State != HubConnectionState.Connected)
+            return;
+
+        await foreach (var msg in connection.StreamAsync<MessageView>("GetMessagesAfterId", currentRoom, MaxMessageId))
+            ReceiveMessage(msg);
+    }
+
+    private async Task SendMessage()
+    {
+        Check.NotNull(connection);
+
+        if (string.IsNullOrWhiteSpace(newMessageText) || currentRoom is null)
+            return;
+
+        var text = newMessageText;
+        newMessageText = null;
+
+        await connection.InvokeAsync("SendMessage", new InputMessage
+        {
+            Room = currentRoom,
+            Text = text,
+        });
+
+        StateHasChanged();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+            await SendMessage();
+
+        var rows = newMessageText?.Split('\n').Length ?? 1;
+        if (rows != newMessageAreaRows)
+        {
+            newMessageAreaRows = rows;
+            StateHasChanged();
+        }
     }
 
     private Task ChangeRoom()
@@ -86,5 +252,30 @@
     private bool IsCurrentUser(string userId)
     {
         return false;
+    }
+
+    private void ReceiveMessage(MessageView msg)
+    {
+        if (messages.Count == 0 || msg.Id < MinMessageId)
+            messages.AddLast(msg);
+        else if (msg.Id > MaxMessageId)
+            messages.AddFirst(msg);
+
+        StateHasChanged();
+    }
+
+    private class InfiniteReconnectPolicy: IRetryPolicy
+    {
+        public TimeSpan? NextRetryDelay(RetryContext retryContext)
+        {
+            return TimeSpan.FromSeconds(5);
+        }
+    }
+
+    private enum ConnectionStatus
+    {
+        Connecting,
+        Connected,
+        Disconnected
     }
 }

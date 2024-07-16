@@ -1,4 +1,4 @@
-﻿namespace DChat.Application.Shared.Server.Services
+﻿namespace DChat.Application.Shared.ClientServer
 {
     public class InputMessage
     {
