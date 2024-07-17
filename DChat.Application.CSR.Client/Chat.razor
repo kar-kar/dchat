@@ -3,6 +3,7 @@
 @using System.Security.Claims
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@implements IAsyncDisposable
 
 <HeadContent>
     <link rel="stylesheet" href="_content/DChat.Application.Shared.Server/chat.css" />
@@ -11,10 +12,6 @@
         function init(dotNetObj) {
             new ChatController(dotNetObj);
         }
-
-        function getTimezoneOffset() {
-            return new Date().getTimezoneOffset();
-        };
     </script>
 </HeadContent>
 
@@ -41,7 +38,7 @@
             <div class="message @(msg.SenderId == userId ? "own" : "")">
                 <div class="message-header">
                     <span class="message-sender">@msg.SenderDisplayName</span>
-                    <span class="message-time">@(DateTimeOffset.FromUnixTimeMilliseconds(msg.Timestamp).AddMinutes(-timezoneOffset).ToString("g"))</span>
+                    <span class="message-time">@(DateTimeOffset.FromUnixTimeMilliseconds(msg.Timestamp).ToLocalTime().ToString("g"))</span>
                 </div>
                 <div class="message-body">
                     @((MarkupString)msg.Html)
@@ -65,10 +62,10 @@
 @code
 {
     private readonly LinkedList<MessageView> messages = new();
+    private DotNetObjectReference<Chat>? self;
     private string? currentRoom;
     private string? newRoom;
     private string? newMessageText;
-    private int timezoneOffset;
     private HubConnection? connection;
     private bool isHistoryLoading;
     private bool isHistoryLoaded;
@@ -77,6 +74,8 @@
     private int newMessageAreaRows = 1;
     private string? userId;
     private bool preventDefaultKeyPress;
+    private bool isComponentInitialized;
+    private bool isJsInitialized;
 
     private long? MinMessageId => messages.Last?.Value.Id;
     private long? MaxMessageId => messages.First?.Value.Id;
@@ -86,9 +85,29 @@
 
     protected override async Task OnInitializedAsync()
     {
+        self = DotNetObjectReference.Create(this);
         userId = await GetUserId();
         connection = await Connect();
-        await JoinRoom(await GetUserDefaultRoom() ?? "world");
+
+        //use additional flag to prevent JSInterop calls before the component is fully initialized
+        //this is needed because OnAfterRenderAsync can be invoked before OnInitializedAsync finished
+        isComponentInitialized = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (isComponentInitialized && !isJsInitialized)
+        {
+            isJsInitialized = true;
+            await JSRuntime.InvokeVoidAsync("init", self);
+            await JoinRoom(await GetUserDefaultRoom() ?? "world");
+        }
+    }
+
+    [JSInvokable]
+    public Task OnMessageSentinelVisible()
+    {
+        return LoadHistory();
     }
 
     private async Task<string> GetUserId()
@@ -286,11 +305,6 @@
         return Task.CompletedTask;
     }
 
-    private bool IsCurrentUser(string userId)
-    {
-        return false;
-    }
-
     private void ReceiveMessage(MessageView msg)
     {
         if (messages.Count == 0 || msg.Id < MinMessageId)
@@ -299,6 +313,12 @@
             messages.AddFirst(msg);
 
         StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (connection is not null)
+            await connection.DisposeAsync();
     }
 
     private class InfiniteReconnectPolicy: IRetryPolicy
