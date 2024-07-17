@@ -57,7 +57,8 @@
 </div>
 <div class="new-message-container">
     <div class="container d-flex p-2">
-        <textarea rows="1" class="new-message-area flex-grow-1" @bind="newMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
+        <textarea rows="@newMessageAreaRows" class="new-message-area flex-grow-1" @bind="newMessageText"
+                  @oninput="HandleInput" @onkeypress="HandleKeyPress"></textarea>
         <button class="send-message-btn" @onclick="SendMessage">
             <i class="fas fa-paper-plane"></i>
         </button>
@@ -76,6 +77,8 @@
     private bool isJsInitialized;
     private int timezoneOffset;
     private string? newMessageText;
+    private int newMessageAreaRows = 1;
+    private bool skipOnInput = false;
 
     private long? MinMessageId => messages.Last?.Value.Id;
     private long? MaxMessageId => messages.First?.Value.Id;
@@ -196,16 +199,36 @@
             throw new UnauthorizedAccessException();
 
         var text = newMessageText;
-        newMessageText = string.Empty;
+        newMessageText = null;
+        newMessageAreaRows = 1;
 
         var msg = await ChatService.AddMessage(currentUser.Id, currentRoom, text);
         NotificationsService.SendMessage(msg);
     }
 
+    private void HandleInput(ChangeEventArgs e)
+    {
+        if (skipOnInput)
+            return;
+
+        newMessageText = e.Value?.ToString() ?? "";
+        var rows = newMessageText?.Split('\n').Length ?? 1;
+
+        if (rows != newMessageAreaRows)
+            newMessageAreaRows = rows;
+    }
+
     private async Task HandleKeyPress(KeyboardEventArgs e)
     {
+        skipOnInput = false;
+
         if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            //skip input event that will be triggered by Enter key
+            skipOnInput = true;
+
             await SendMessage();
+        }
     }
 
     private void OnMessageReceived(object? sender, MessageView msg)
