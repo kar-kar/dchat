@@ -300,9 +300,10 @@
         }
     }
 
-    private Task ChangeRoom()
+    private async Task ChangeRoom()
     {
-        return Task.CompletedTask;
+        if (!string.IsNullOrEmpty(newRoom))
+            await JoinRoom(newRoom);
     }
 
     private void ReceiveMessage(MessageView msg)
