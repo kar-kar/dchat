@@ -20,6 +20,9 @@
     <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Content Update="wwwroot\app.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 </Project>
