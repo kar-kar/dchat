@@ -35,6 +35,15 @@ namespace DChat.Application.Shared.Server.Services
             return Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
         }
 
+        public async Task<string?> GetDefaultRoom()
+        {
+            if (Context.User is null)
+                throw new UnauthorizedAccessException("User is not authenticated.");
+
+            var user = await userManager.GetUserAsync(Context.User) ?? throw new UnauthorizedAccessException("User is not authenticated.");
+            return user.DefaultRoom;
+        }
+
         public async Task SetDefaultRoom(string room)
         {
             if (Context.User is null)

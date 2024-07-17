@@ -1,5 +1,6 @@
 ﻿@using DChat.Application.Shared.ClientServer
 @using Microsoft.AspNetCore.SignalR.Client
+@using System.Security.Claims
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 
@@ -37,7 +38,7 @@
     <div class="message-list container d-flex flex-column-reverse">
         @foreach (var msg in messages)
         {
-            <div class="message @(IsCurrentUser(msg.SenderId) ? "own" : "")">
+            <div class="message @(msg.SenderId == userId ? "own" : "")">
                 <div class="message-header">
                     <span class="message-sender">@msg.SenderDisplayName</span>
                     <span class="message-time">@(DateTimeOffset.FromUnixTimeMilliseconds(msg.Timestamp).AddMinutes(-timezoneOffset).ToString("g"))</span>
@@ -52,7 +53,9 @@
 </div>
 <div class="new-message-container">
     <div class="container d-flex p-2">
-        <textarea rows="@newMessageAreaRows" class="new-message-area flex-grow-1" @bind="newMessageText" @bind:event="oninput" @onkeypress="HandleKeyPress"></textarea>
+        <textarea rows="@newMessageAreaRows" class="new-message-area flex-grow-1"
+            @bind="newMessageText" @oninput="HandleInput"
+            @onkeypress="HandleKeyPress" @onkeypress:preventDefault="preventDefaultKeyPress"></textarea>
         <button class="send-message-btn" @onclick="SendMessage">
             <i class="fas fa-paper-plane"></i>
         </button>
@@ -72,6 +75,8 @@
     private ConnectionStatus connectionStatus;
     private string? connectionTitle;
     private int newMessageAreaRows = 1;
+    private string? userId;
+    private bool preventDefaultKeyPress;
 
     private long? MinMessageId => messages.Last?.Value.Id;
     private long? MaxMessageId => messages.First?.Value.Id;
@@ -81,8 +86,29 @@
 
     protected override async Task OnInitializedAsync()
     {
+        userId = await GetUserId();
         connection = await Connect();
-        await JoinRoom("world");
+        await JoinRoom(await GetUserDefaultRoom() ?? "world");
+    }
+
+    private async Task<string> GetUserId()
+    {
+        Check.NotNull(AuthStateTask);
+
+        var authState = await AuthStateTask;
+        var user = authState.User;
+        var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return id ?? throw new UnauthorizedAccessException();
+    }
+
+    private async Task<string?> GetUserDefaultRoom()
+    {
+        Check.NotNull(connection);
+
+        if (connection.State != HubConnectionState.Connected)
+            return null;
+
+        return await connection.InvokeAsync<string?>("GetDefaultRoom");
     }
 
     private async Task<HubConnection> Connect()
@@ -220,7 +246,8 @@
             return;
 
         var text = newMessageText;
-        newMessageText = null;
+        newMessageText = "";
+        newMessageAreaRows = 1;
 
         await connection.InvokeAsync("SendMessage", new InputMessage
         {
@@ -231,16 +258,26 @@
         StateHasChanged();
     }
 
-    private async Task HandleKeyPress(KeyboardEventArgs e)
+    private void HandleInput(ChangeEventArgs e)
     {
-        if (e.Key == "Enter" && !e.ShiftKey)
-            await SendMessage();
-
+        newMessageText = e.Value?.ToString() ?? "";
         var rows = newMessageText?.Split('\n').Length ?? 1;
+
         if (rows != newMessageAreaRows)
         {
             newMessageAreaRows = rows;
             StateHasChanged();
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        preventDefaultKeyPress = false;
+
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            preventDefaultKeyPress = true;
+            await SendMessage();
         }
     }
 
