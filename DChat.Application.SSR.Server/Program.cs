@@ -17,9 +17,9 @@ namespace DChat.Application.SSR
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.AddServiceDefaults();
 
             var dbConnectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.");
-            var rabbitMqConnectionString = builder.Configuration.GetConnectionString("RabbitMQ") ?? throw new InvalidOperationException("Connection string 'RabbitMQ' not found.");
 
             // Add services to the container.
             builder.Services.AddRazorComponents();
@@ -55,12 +55,14 @@ namespace DChat.Application.SSR
                 options.EnableDetailedErrors = true;
             });
 
-            builder.Services.Configure<NotificationsServiceOptions>(options => options.RabbitMqConnectionString = rabbitMqConnectionString);
+            builder.AddRabbitMQClient("rabbit");
             builder.Services.AddSingleton<NotificationsService>();
             builder.Services.AddScoped<ChatService>();
             builder.Services.AddHostedService<NotificationsProcessingService>();
 
             var app = builder.Build();
+
+            app.MapDefaultEndpoints();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

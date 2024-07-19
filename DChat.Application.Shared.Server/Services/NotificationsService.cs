@@ -1,7 +1,6 @@
 ﻿using DChat.Application.Shared.ClientServer;
 using MessagePack;
 using MessagePack.Resolvers;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -12,23 +11,13 @@ namespace DChat.Application.Shared.Server.Services
         private const string exchangeName = "chat";
         private const string routingKey = "";
         private readonly ILogger<NotificationsService> logger;
-        private readonly IConnection connection;
         private readonly IModel channel;
         private readonly EventingBasicConsumer consumer;
 
         public event EventHandler<MessageView>? MessageReceived;
 
-        public NotificationsService(IOptions<NotificationsServiceOptions> options, ILogger<NotificationsService> logger)
+        public NotificationsService(IConnection connection, ILogger<NotificationsService> logger)
         {
-            if (string.IsNullOrEmpty(options.Value.RabbitMqConnectionString))
-                throw new ArgumentException("RabbitMqConnectionString is required", nameof(options));
-
-            var factory = new ConnectionFactory
-            {
-                Uri = new Uri(options.Value.RabbitMqConnectionString)
-            };
-
-            connection = factory.CreateConnection();
             channel = connection.CreateModel();
             channel.ExchangeDeclare(exchangeName, ExchangeType.Fanout);
 
@@ -90,7 +79,6 @@ namespace DChat.Application.Shared.Server.Services
         {
             consumer.Received -= Received;
             channel.Dispose();
-            connection.Dispose();
         }
     }
 }

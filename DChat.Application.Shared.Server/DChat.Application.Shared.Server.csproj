@@ -10,10 +10,10 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.5.168" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.6" />
-    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+    <PackageReference Include="Aspire.RabbitMQ.Client" Version="8.0.2" />
+    <PackageReference Include="MessagePack" Version="2.5.171" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DChat.Application.Shared.ClientServer\DChat.Application.Shared.ClientServer.csproj" />

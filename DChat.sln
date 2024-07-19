@@ -22,6 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		backlog.txt = backlog.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.AppHost", "DChat.AppHost\DChat.AppHost.csproj", "{EC6A60D9-ADD3-4C3E-9FE9-C867C019E561}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.ServiceDefaults", "DChat.ServiceDefaults\DChat.ServiceDefaults.csproj", "{7E32B1E7-8D02-4D77-87E2-CB0553F61229}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +60,14 @@ Global
 		{EEE7F445-FADD-4E65-A5A6-48359A68ACD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEE7F445-FADD-4E65-A5A6-48359A68ACD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEE7F445-FADD-4E65-A5A6-48359A68ACD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC6A60D9-ADD3-4C3E-9FE9-C867C019E561}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC6A60D9-ADD3-4C3E-9FE9-C867C019E561}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC6A60D9-ADD3-4C3E-9FE9-C867C019E561}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC6A60D9-ADD3-4C3E-9FE9-C867C019E561}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E32B1E7-8D02-4D77-87E2-CB0553F61229}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E32B1E7-8D02-4D77-87E2-CB0553F61229}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E32B1E7-8D02-4D77-87E2-CB0553F61229}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E32B1E7-8D02-4D77-87E2-CB0553F61229}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

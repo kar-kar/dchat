@@ -7,10 +7,10 @@
     <UserSecretsId>62723676-e2d9-4c0f-a9bb-f1e64895e418</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6">
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -19,5 +19,6 @@
     <ProjectReference Include="..\DChat.Application.CSR.Client\DChat.Application.CSR.Client.csproj" />
     <ProjectReference Include="..\DChat.Application.Shared.Server\DChat.Application.Shared.Server.csproj" />
     <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
+    <ProjectReference Include="..\DChat.ServiceDefaults\DChat.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>
