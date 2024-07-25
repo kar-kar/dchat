@@ -5,11 +5,19 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OutputType>Library</OutputType>
+    <UserSecretsId>c06a2d27-1b92-4ce6-963e-43b94cff7159</UserSecretsId>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="libman.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libman.json" />
+  </ItemGroup>
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
     <PackageReference Include="Aspire.RabbitMQ.Client" Version="8.0.2" />
     <PackageReference Include="MessagePack" Version="2.5.171" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.7" />

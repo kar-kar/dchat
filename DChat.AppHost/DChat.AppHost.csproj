@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.0.2" />
+    <PackageReference Include="Aspire.Hosting.Azure.Sql" Version="8.0.2" />
     <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="8.0.2" />
   </ItemGroup>
 
