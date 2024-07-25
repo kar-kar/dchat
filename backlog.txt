@@ -15,3 +15,4 @@ header and footer jump in mobile
 enter in mobile browser sends message instead of new line
 password requirements on register and changing are not same
 long words overflow out of message box
+account menu in ISR and CSR doesn't show display name
