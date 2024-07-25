@@ -7,6 +7,12 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="libman.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libman.json" />
+  </ItemGroup>
+  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
   <ItemGroup>
