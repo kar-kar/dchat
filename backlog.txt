@@ -13,6 +13,4 @@ switch between chat apps
 
 header and footer jump in mobile
 enter in mobile browser sends message instead of new line
-long words overflow out of message box
 account menu in ISR and CSR doesn't show display name
-change room popup is not centered
