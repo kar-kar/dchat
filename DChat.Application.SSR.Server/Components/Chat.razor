@@ -7,11 +7,11 @@
 @inject UserManager<ChatUser> UserManager
 
 <HeadContent>
-    <link rel="stylesheet" href="_content/DChat.Application.Shared.Server/chat.css" />
+    <link rel="stylesheet" href="_content/DChat.Application.Shared.Server/chat.css?v=@BuildVersion" />
     <script src="signalr/dist/browser/signalr.min.js"></script>
     <script src="squirrelly/dist/browser/squirrelly.min.js"></script>
     <script src="jquery/dist/jquery.slim.min.js"></script>
-    <script src="Components/Chat.razor.js"></script>
+    <script src="Components/Chat.razor.js?v=@BuildVersion"></script>
 
     <script>
         $(function () {
@@ -64,6 +64,9 @@
 {
     private string? UserId { get; set; }
     private string? DefaultRoom { get; set; }
+
+    [CascadingParameter(Name = "BuildVersion")]
+    private string BuildVersion { get; set; } = "default";
 
     protected override async Task OnInitializedAsync()
     {

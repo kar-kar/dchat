@@ -6,8 +6,8 @@
 @implements IAsyncDisposable
 
 <HeadContent>
-    <link rel="stylesheet" href="_content/DChat.Application.Shared.Server/chat.css" />
-    <script src="Chat.razor.js"></script>
+    <link rel="stylesheet" href="_content/DChat.Application.Shared.Server/chat.css?v=@BuildVersion" />
+    <script src="Chat.razor.js?v=@BuildVersion"></script>
     <script>
         function init(dotNetObj) {
             new ChatController(dotNetObj);
@@ -82,6 +82,9 @@
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    [CascadingParameter(Name = "BuildVersion")]
+    private string BuildVersion { get; set; } = "default";
 
     protected override async Task OnInitializedAsync()
     {

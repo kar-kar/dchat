@@ -1,4 +1,5 @@
 using DChat.Application.CSR.Server.Components;
+using DChat.Application.Shared.ClientServer;
 using DChat.Application.Shared.ClientServer.Components.Layout;
 using DChat.Application.Shared.Server.Components.Account;
 using DChat.Application.Shared.Server.Components.Account.Layout;
@@ -55,6 +56,7 @@ namespace DChat.Application.CSR
             builder.Services.AddSingleton<NotificationsService>();
             builder.Services.AddScoped<ChatService>();
             builder.Services.AddHostedService<NotificationsProcessingService>();
+            builder.Services.AddBuildVersionCascadingValue();
 
             var app = builder.Build();
 
