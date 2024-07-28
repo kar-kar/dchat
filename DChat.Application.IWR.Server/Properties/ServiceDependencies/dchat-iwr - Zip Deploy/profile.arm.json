@@ -21,7 +21,7 @@
     },
     "resourceName": {
       "type": "string",
-      "defaultValue": "dchat-csr",
+      "defaultValue": "dchat-iwr",
       "metadata": {
         "description": "Name of the main resource to be created by this template."
       }
