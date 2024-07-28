@@ -2,7 +2,7 @@ using DChat.Application.Shared.ClientServer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace DChat.Application.CSR.Client
+namespace DChat.Application.IWR.Client
 {
     internal class Program
     {

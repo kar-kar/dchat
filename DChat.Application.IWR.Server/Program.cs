@@ -1,4 +1,4 @@
-using DChat.Application.CSR.Server.Components;
+using DChat.Application.IWR.Server.Components;
 using DChat.Application.Shared.ClientServer;
 using DChat.Application.Shared.ClientServer.Components.Layout;
 using DChat.Application.Shared.Server.Components.Account;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace DChat.Application.CSR
+namespace DChat.Application.IWR
 {
     public class Program
     {
