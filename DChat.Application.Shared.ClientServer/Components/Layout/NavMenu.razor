@@ -1,9 +1,22 @@
 ﻿<nav data-bs-theme="dark" class="navbar navbar-dark bg-dark shadow-sm">
     <div class="container">
         <NavLink href="">
-            <img src="_content/DChat.Application.Shared.Server/dchat_logo.svg" />
+            <img src="@logoUrl" />
         </NavLink>
         <SectionOutlet SectionName="nav-bar-section" />
         <AccountMenu />
     </div>
 </nav>
+
+@code
+{
+    private string logoUrl = "_content/DChat.Application.Shared.Server/dchat_logo.svg";
+
+    [CascadingParameter]
+    private ServerInfo[]? Servers { get; set; }
+
+    protected override void OnInitialized()
+    {
+        logoUrl = Servers?.FirstOrDefault(t => t.IsCurrent)?.Logo ?? logoUrl;
+    }
+}

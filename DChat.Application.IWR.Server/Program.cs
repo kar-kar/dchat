@@ -58,6 +58,9 @@ namespace DChat.Application.IWR
             builder.Services.AddHostedService<NotificationsProcessingService>();
             builder.Services.AddBuildVersionCascadingValue();
 
+            var servers = builder.Configuration.GetSection("Servers").Get<ServerInfo[]>() ?? [];
+            builder.Services.AddCascadingValue(_ => servers);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -89,6 +92,9 @@ namespace DChat.Application.IWR
 
             app.MapHub<ChatSignalRHub>("/chathub")
                 .WithHttpLogging(HttpLoggingFields.All);
+
+            //add endpoint providing server list for the client
+            app.MapGet("/servers", () => Results.Ok(servers));
 
             app.Run();
         }

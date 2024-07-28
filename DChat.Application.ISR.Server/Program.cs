@@ -52,6 +52,9 @@ namespace DChat.Application.ISR
             builder.Services.AddScoped<ChatService>();
             builder.Services.AddBuildVersionCascadingValue();
 
+            var servers = builder.Configuration.GetSection("Servers").Get<ServerInfo[]>() ?? [];
+            builder.Services.AddCascadingValue(_ => servers);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
