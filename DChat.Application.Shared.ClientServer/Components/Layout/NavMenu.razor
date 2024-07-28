@@ -1,8 +1,32 @@
 ﻿<nav data-bs-theme="dark" class="navbar navbar-dark bg-dark shadow-sm">
     <div class="container">
-        <NavLink href="">
-            <img src="@logoUrl" />
-        </NavLink>
+        @if (Servers?.Length > 1)
+        {
+            <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" type="button">
+                    <img src="@logoUrl" />
+                </button>
+                <ul class="dropdown-menu">
+                    @foreach (var server in Servers)
+                    {
+                        if (!server.IsCurrent)
+                        {
+                            <li>
+                                <NavLink href="@server.Url" class="dropdown-item">
+                                    <img src="@server.Logo" />
+                                </NavLink>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+            <NavLink href="">
+                <img src="@logoUrl" />
+            </NavLink>
+        }
         <SectionOutlet SectionName="nav-bar-section" />
         <AccountMenu />
     </div>

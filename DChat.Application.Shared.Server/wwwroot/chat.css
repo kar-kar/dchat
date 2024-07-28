@@ -21,10 +21,6 @@ main {
         border-color: white;
     }
 
-    #room-btn:focus {
-        box-shadow: none;
-    }
-
 .dropdown-menu-center {
     right: auto;
     left: 50% !important;
