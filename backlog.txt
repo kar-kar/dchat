@@ -10,7 +10,6 @@ deploy to azure
 
 ##bugs
 
-header and footer jump in mobile
 enter in mobile browser sends message instead of new line
 account menu in ISR and CSR doesn't show display name
 date/time formats are different in different sites
