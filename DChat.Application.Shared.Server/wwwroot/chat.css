@@ -14,15 +14,6 @@ main {
     flex-direction: column;
 }
 
-#room-btn {
-    color: white;
-}
-
-    #room-btn:hover {
-        color: white;
-        border-color: white;
-    }
-
 .dropdown-menu-center {
     right: auto;
     left: 50% !important;
