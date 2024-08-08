@@ -43,9 +43,12 @@ namespace DChat.Application.ISR
 
             builder.Services
                 .AddIdentityCore<ChatUser>(IdentityExtensions.ConfigureOptions)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ChatDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<IUserClaimsPrincipalFactory<ChatUser>, ChatUserClaimsPrincipalFactory>();
 
             builder.Services.Configure<NotificationsServiceOptions>(options => options.RabbitMqConnectionString = rabbitMqConnectionString);
             builder.Services.AddSingleton<NotificationsService>();

@@ -50,13 +50,15 @@ namespace DChat.Application.Shared.Server.Components.Account
             {
                 var userId = principal.FindFirst(options.ClaimsIdentity.UserIdClaimType)?.Value;
                 var userName = principal.FindFirst(options.ClaimsIdentity.UserNameClaimType)?.Value;
+                var displayName = principal.FindFirst(ChatUserClaimTypes.DisplayName)?.Value;
 
                 if (userId != null && userName != null)
                 {
                     state.PersistAsJson(nameof(UserInfo), new UserInfo
                     {
                         UserId = userId,
-                        UserName = userName
+                        UserName = userName,
+                        DisplayName = displayName
                     });
                 }
             }

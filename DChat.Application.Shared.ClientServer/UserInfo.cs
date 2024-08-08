@@ -6,5 +6,6 @@ namespace DChat.Application.Shared.ClientServer
     {
         public required string UserId { get; set; }
         public required string UserName { get; set; }
+        public string? DisplayName { get; set; }
     }
 }

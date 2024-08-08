@@ -43,9 +43,12 @@ namespace DChat.Application.IWR
 
             builder.Services
                 .AddIdentityCore<ChatUser>(IdentityExtensions.ConfigureOptions)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ChatDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<IUserClaimsPrincipalFactory<ChatUser>, ChatUserClaimsPrincipalFactory>();
 
             builder.Services.AddSignalR(options =>
             {

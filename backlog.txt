@@ -10,6 +10,6 @@ deploy to azure
 
 ##bugs
 
+when display name is updated in one site the other two sites continue to display old name in the Account Menu until logout/login
 enter in mobile browser sends message instead of new line
-account menu in ISR and CSR doesn't show display name
 date/time formats are different in different sites

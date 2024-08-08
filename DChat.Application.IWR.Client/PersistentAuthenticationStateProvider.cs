@@ -27,9 +27,12 @@ namespace DChat.Application.IWR.Client
                 return;
             }
 
-            Claim[] claims = [
+            List<Claim> claims = [
                 new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
                 new Claim(ClaimTypes.Name, userInfo.UserName)];
+
+            if (!string.IsNullOrEmpty(userInfo.DisplayName))
+                claims.Add(new Claim(ChatUserClaimTypes.DisplayName, userInfo.DisplayName));
 
             authenticationStateTask = Task.FromResult(
                 new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
