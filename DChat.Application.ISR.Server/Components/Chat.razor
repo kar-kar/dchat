@@ -26,8 +26,12 @@
 </HeadContent>
 
 <SectionContent SectionName="nav-bar-section">
-    <div class="flex-grow-1 dropdown dropdown-center mx-2">
-        <button id="room-btn" title="Room" class="btn btn-dark w-100" data-bs-toggle="dropdown" aria-expanded="false">@currentRoom</button>
+    <div id="room-menu" class="flex-grow-1 flex-shrink-1 dropdown dropdown-center mx-2">
+        <button id="room-btn" class="btn btn-dark w-100 d-flex justify-content-center" data-bs-toggle="dropdown" aria-expanded="false">
+            <span id="room-title-label">room:&nbsp;</span>
+            <span id="room-title">@currentRoom</span>
+        </button>
+
         <EditForm Model="this" OnSubmit="ChangeRoom" class="dropdown-menu dropdown-menu-center p-4">
             <div class="mb-3">
                 <label for="room-name-input" class="form-label">Change room</label>

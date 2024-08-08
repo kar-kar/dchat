@@ -13,6 +13,10 @@
         if (!this.roomBtn)
             throw new Error("Room button not found");
 
+        this.roomTitle = document.getElementById("room-title");
+        if (!this.roomTitle)
+            throw new Error("Room title not found");
+
         this.changeRoomForm = document.getElementById("change-room-form");
         if (!this.changeRoomForm)
             throw new Error("Change room form not found");
@@ -145,7 +149,7 @@
         this.minMsgId = null;
         this.maxMsgId = null;
         this.currentRoom = room;
-        this.roomBtn.innerHTML = this.currentRoom;
+        this.roomTitle.innerHTML = this.currentRoom;
         this.isHistoryLoaded = false;
 
         if (this.currentRoom) {
