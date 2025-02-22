@@ -10,16 +10,17 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Oragon.RabbitMQ.AspireClient;
 
-namespace DChat.Application.SSR
+namespace DChat.Application.SSR.Server
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.AddServiceDefaults();
 
-            var dbConnectionString = builder.Configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("Connection string 'Default' not found.");
             var rabbitMqConnectionString = builder.Configuration.GetConnectionString("RabbitMQ") ?? throw new InvalidOperationException("Connection string 'RabbitMQ' not found.");
 
             // Add services to the container.
@@ -38,9 +39,8 @@ namespace DChat.Application.SSR
                 })
                 .AddIdentityCookies();
 
-            builder.Services
-                .AddDbContext<ChatDbContext>(options => options.UseSqlServer(dbConnectionString))
-                .AddDatabaseDeveloperPageExceptionFilter();
+            builder.AddSqlServerDbContext<ChatDbContext>("chatdb");
+            builder.AddRabbitMQClient("rabbit");
 
             builder.Services
                 .AddIdentityCore<ChatUser>(IdentityExtensions.ConfigureOptions)
@@ -66,6 +66,8 @@ namespace DChat.Application.SSR
             builder.Services.AddCascadingValue(_ => servers);
 
             var app = builder.Build();
+
+            app.MapDefaultEndpoints();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

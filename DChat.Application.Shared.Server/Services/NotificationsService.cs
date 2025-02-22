@@ -1,7 +1,6 @@
 ﻿using DChat.Application.Shared.ClientServer;
 using MessagePack;
 using MessagePack.Resolvers;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -14,12 +13,9 @@ namespace DChat.Application.Shared.Server.Services
 
         public event EventHandler<MessageView>? MessageReceived;
 
-        public NotificationsService(IOptions<NotificationsServiceOptions> options, ILogger<NotificationsService> logger)
+        public NotificationsService(IConnection connection, ILogger<NotificationsService> logger)
         {
-            if (string.IsNullOrEmpty(options.Value.RabbitMqConnectionString))
-                throw new ArgumentException("RabbitMqConnectionString is required", nameof(options));
-
-            rabbitTask = RabbitMq.Connect(options.Value.RabbitMqConnectionString, Received);
+            rabbitTask = RabbitMq.Connect(connection, Received);
             this.logger = logger;
         }
 
@@ -80,7 +76,6 @@ namespace DChat.Application.Shared.Server.Services
             private const string exchangeName = "chat";
             private const string routingKey = "";
 
-            public required IConnection Connection { get; init; }
             public required IChannel Channel { get; init; }
             public required AsyncEventingBasicConsumer Consumer { get; init; }
             public required Func<ReadOnlyMemory<byte>, Task> Receive { get; init; }
@@ -96,14 +91,8 @@ namespace DChat.Application.Shared.Server.Services
                 return Channel.BasicPublishAsync(exchangeName, routingKey, mandatory: true, basicProperties: props, body);
             }
 
-            public static async Task<RabbitMq> Connect(string connectionString, Func<ReadOnlyMemory<byte>, Task> receive)
+            public static async Task<RabbitMq> Connect(IConnection connection, Func<ReadOnlyMemory<byte>, Task> receive)
             {
-                var factory = new ConnectionFactory
-                {
-                    Uri = new Uri(connectionString)
-                };
-
-                var connection = await factory.CreateConnectionAsync();
                 var channel = await connection.CreateChannelAsync();
                 await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
                 var queueName = (await channel.QueueDeclareAsync()).QueueName;
@@ -112,7 +101,6 @@ namespace DChat.Application.Shared.Server.Services
 
                 var rabbitMq = new RabbitMq
                 {
-                    Connection = connection,
                     Channel = channel,
                     Consumer = consumer,
                     Receive = receive
@@ -133,7 +121,6 @@ namespace DChat.Application.Shared.Server.Services
             {
                 Consumer.ReceivedAsync -= ReceiveAsync;
                 await Channel.DisposeAsync();
-                await Connection.DisposeAsync();
             }
         }
     }

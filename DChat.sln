@@ -22,6 +22,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Application.IWR.Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DChat.Application.IWR.Server", "DChat.Application.IWR.Server\DChat.Application.IWR.Server.csproj", "{596285F1-BA15-40EB-BDD0-3C61812DBD78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.AppHost", "DChat.AppHost\DChat.AppHost.csproj", "{14BBF7BE-CBFE-4885-8E4B-0EACB51E2D41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DChat.ServiceDefaults", "DChat.ServiceDefaults\DChat.ServiceDefaults.csproj", "{E0920872-75B7-CEDF-8CCB-8AD1397BBDC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +60,14 @@ Global
 		{596285F1-BA15-40EB-BDD0-3C61812DBD78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{596285F1-BA15-40EB-BDD0-3C61812DBD78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{596285F1-BA15-40EB-BDD0-3C61812DBD78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14BBF7BE-CBFE-4885-8E4B-0EACB51E2D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14BBF7BE-CBFE-4885-8E4B-0EACB51E2D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14BBF7BE-CBFE-4885-8E4B-0EACB51E2D41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14BBF7BE-CBFE-4885-8E4B-0EACB51E2D41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0920872-75B7-CEDF-8CCB-8AD1397BBDC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0920872-75B7-CEDF-8CCB-8AD1397BBDC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0920872-75B7-CEDF-8CCB-8AD1397BBDC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0920872-75B7-CEDF-8CCB-8AD1397BBDC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

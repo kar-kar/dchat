@@ -13,15 +13,18 @@
     <None Include="libman.json" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Oragon.RabbitMQ.AspireClient" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DChat.Data\DChat.Data.csproj" />
     <ProjectReference Include="..\DChat.Application.Shared.Server\DChat.Application.Shared.Server.csproj" />
+    <ProjectReference Include="..\DChat.ServiceDefaults\DChat.ServiceDefaults.csproj" />
   </ItemGroup>
 </Project>
