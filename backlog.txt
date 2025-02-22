@@ -6,7 +6,6 @@ allow to clear room history
 display room list
 display user list
 messages with pictures
-deploy to azure
 
 ##bugs
 
