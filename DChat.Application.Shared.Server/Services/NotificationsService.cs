@@ -7,14 +7,10 @@ using RabbitMQ.Client.Events;
 
 namespace DChat.Application.Shared.Server.Services
 {
-    public sealed class NotificationsService : IDisposable
+    public sealed class NotificationsService : IAsyncDisposable
     {
-        private const string exchangeName = "chat";
-        private const string routingKey = "";
         private readonly ILogger<NotificationsService> logger;
-        private readonly IConnection connection;
-        private readonly IModel channel;
-        private readonly EventingBasicConsumer consumer;
+        private readonly Task<RabbitMq> rabbitTask;
 
         public event EventHandler<MessageView>? MessageReceived;
 
@@ -23,41 +19,28 @@ namespace DChat.Application.Shared.Server.Services
             if (string.IsNullOrEmpty(options.Value.RabbitMqConnectionString))
                 throw new ArgumentException("RabbitMqConnectionString is required", nameof(options));
 
-            var factory = new ConnectionFactory
-            {
-                Uri = new Uri(options.Value.RabbitMqConnectionString)
-            };
-
-            connection = factory.CreateConnection();
-            channel = connection.CreateModel();
-            channel.ExchangeDeclare(exchangeName, ExchangeType.Fanout);
-
-            var queueName = channel.QueueDeclare().QueueName;
-            channel.QueueBind(queueName, exchangeName, routingKey);
-
-            consumer = new EventingBasicConsumer(channel);
-            consumer.Received += Received;
-
-            channel.BasicConsume(queueName, autoAck: true, consumer);
+            rabbitTask = RabbitMq.Connect(options.Value.RabbitMqConnectionString, Received);
             this.logger = logger;
         }
 
-        public void SendMessage(MessageView msg)
+        public async Task SendMessage(MessageView msg)
         {
             var body = SerializeMessage(msg);
             if (body is null)
                 return;
 
-            channel.BasicPublish(exchangeName, routingKey, basicProperties: null, body.Value);
+            var rabbit = await rabbitTask;
+            await rabbit.Send(body.Value);
         }
 
-        private void Received(object? sender, BasicDeliverEventArgs e)
+        private Task Received(ReadOnlyMemory<byte> body)
         {
-            var msg = ParseMessage(e.Body);
-            if (msg is null)
-                return;
+            var msg = ParseMessage(body);
 
-            MessageReceived?.Invoke(this, msg);
+            if (msg is not null)
+                MessageReceived?.Invoke(this, msg);
+
+            return Task.CompletedTask;
         }
 
         private ReadOnlyMemory<byte>? SerializeMessage(MessageView msg)
@@ -86,11 +69,72 @@ namespace DChat.Application.Shared.Server.Services
             }
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            consumer.Received -= Received;
-            channel.Dispose();
-            connection.Dispose();
+            var rabbit = await rabbitTask;
+            await rabbit.DisposeAsync();
+        }
+
+        private class RabbitMq: IAsyncDisposable
+        {
+            private const string exchangeName = "chat";
+            private const string routingKey = "";
+
+            public required IConnection Connection { get; init; }
+            public required IChannel Channel { get; init; }
+            public required AsyncEventingBasicConsumer Consumer { get; init; }
+            public required Func<ReadOnlyMemory<byte>, Task> Receive { get; init; }
+
+            public ValueTask Send(ReadOnlyMemory<byte> body)
+            {
+                var props = new BasicProperties
+                {
+                    ContentType = "application/octet-stream",
+                    DeliveryMode = DeliveryModes.Transient
+                };
+
+                return Channel.BasicPublishAsync(exchangeName, routingKey, mandatory: true, basicProperties: props, body);
+            }
+
+            public static async Task<RabbitMq> Connect(string connectionString, Func<ReadOnlyMemory<byte>, Task> receive)
+            {
+                var factory = new ConnectionFactory
+                {
+                    Uri = new Uri(connectionString)
+                };
+
+                var connection = await factory.CreateConnectionAsync();
+                var channel = await connection.CreateChannelAsync();
+                await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout);
+                var queueName = (await channel.QueueDeclareAsync()).QueueName;
+                await channel.QueueBindAsync(queueName, exchangeName, routingKey);
+                var consumer = new AsyncEventingBasicConsumer(channel);
+
+                var rabbitMq = new RabbitMq
+                {
+                    Connection = connection,
+                    Channel = channel,
+                    Consumer = consumer,
+                    Receive = receive
+                };
+
+                consumer.ReceivedAsync += rabbitMq.ReceiveAsync;
+                await channel.BasicConsumeAsync(queueName, autoAck: true, consumer);
+
+                return rabbitMq;
+            }
+
+            private Task ReceiveAsync(object? sender, BasicDeliverEventArgs e)
+            {
+                return Receive(e.Body);
+            }
+
+            public async ValueTask DisposeAsync()
+            {
+                Consumer.ReceivedAsync -= ReceiveAsync;
+                await Channel.DisposeAsync();
+                await Connection.DisposeAsync();
+            }
         }
     }
 }

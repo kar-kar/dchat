@@ -210,7 +210,7 @@
         newMessageAreaRows = 1;
 
         var msg = await ChatService.AddMessage(currentUser.Id, currentRoom, text);
-        NotificationsService.SendMessage(msg);
+        await NotificationsService.SendMessage(msg);
     }
 
     private void HandleInput(ChangeEventArgs e)

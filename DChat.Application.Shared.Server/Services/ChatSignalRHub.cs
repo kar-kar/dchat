@@ -75,7 +75,7 @@ namespace DChat.Application.Shared.Server.Services
 
             var msg = await chatService.AddMessage(sender, input.Room, input.Text);
 
-            notificationsService.SendMessage(msg);
+            await notificationsService.SendMessage(msg);
         }
 
         public async IAsyncEnumerable<MessageView> GetMessagesBeforeId(string room, int? id, int count, [EnumeratorCancellation] CancellationToken cancellationToken)
